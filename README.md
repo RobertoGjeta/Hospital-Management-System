@@ -39,6 +39,8 @@ Patient (Roberto, Albi)
 As a patient, I want to book an appointment with a doctor so that I can receive treatment.
 As a patient, I want to view my test results so that I can understand my health status.
 As a patient, I want to see my medical bills so that I know how much I must pay.
+As a patient, I want to view my medical history.
+
 
 Doctor (Drini, Christian)
 As a doctor, I want to view my patients’ medical records so that I can make accurate diagnoses.

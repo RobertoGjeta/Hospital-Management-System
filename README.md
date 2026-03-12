@@ -1,4 +1,4 @@
-# Hospital-Management-System
+# Hospital-IVF-Management-System
 This project focuses on designing and building a complete software developemt system for a Fertility Treatment Hospital (IVF).
 
 The system manages patient treatment, medical records, fertility cycles, donors and embryos.

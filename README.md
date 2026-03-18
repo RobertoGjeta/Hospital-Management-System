@@ -75,10 +75,10 @@ The technologies we will be using:
 * Repository: GitHub
 
 ## Authors
-Drini Dalipaj
-Roberto Gjeta
-Armend Stafasani
-Arbri Hamzallari
-Silvja Fejzulla
-Albi Hoxha
+Drini Dalipaj,
+Roberto Gjeta,
+Armend Stafasani,
+Arbri Hamzallari,
+Silvja Fejzulla,
+Albi Hoxha, and
 Christian Tasellari

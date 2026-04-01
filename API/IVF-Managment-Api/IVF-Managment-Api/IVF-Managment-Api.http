@@ -1,0 +1,6 @@
+@IVF_Managment_Api_HostAddress = http://localhost:5267
+
+GET {{IVF_Managment_Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

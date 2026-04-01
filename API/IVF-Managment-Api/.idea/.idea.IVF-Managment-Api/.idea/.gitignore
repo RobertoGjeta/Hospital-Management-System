@@ -2,10 +2,10 @@
 /shelf/
 /workspace.xml
 # Rider ignored files
-/contentModel.xml
-/.idea.IVF-Managment-System-Api.iml
 /modules.xml
 /projectSettingsUpdater.xml
+/contentModel.xml
+/.idea.IVF-Managment-Api.iml
 # Editor-based HTTP Client requests
 /httpRequests/
 # Datasource local storage ignored files

@@ -28,7 +28,25 @@ public class LabTechnician
 
     public DateTime? HireDate { get; set; }
 
+    public string? Specialization { get; set; } // e.g. Embryology, Andrology, Cryopreservation
+
+    public string? LicenseNumber { get; set; }
+
+    public string? Qualifications { get; set; }
+
     public bool IsActive { get; set; } = true;
+
+    public int FailedLoginAttempts { get; set; } = 0;
+
+    public DateTime? AccountLockedUntil { get; set; }
+
+    public DateTime? LastLoginAt { get; set; }
+
+    public DateTime PasswordChangedAt { get; set; } = DateTime.UtcNow;
+
+    public string? RefreshToken { get; set; }
+
+    public DateTime? RefreshTokenExpiryTime { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

@@ -1,0 +1,88 @@
+@startuml AD_LT_02_Record_Embryo_Development
+
+title AD_LT_02 — Record Embryo Development & Cryopreservation
+
+|Lab Technician|
+|System|
+
+|Lab Technician|
+
+note
+  Prerequisites:
+  - AD_LT_00 User Authenticated
+  - AD_LT_01 Active IVF cycle exists
+  - Technician assigned to this cycle
+end note
+
+start
+
+:Open Embryology Module;
+:Search and select patient's active cycle;
+
+|System|
+
+:Display embryo list with\nlatest data + doctor instructions;
+
+|Lab Technician|
+
+:Select embryo to update;
+:Enter observation data:\n- Development day\n- Cell count\n- Fragmentation %\n- Morphology grade (Gardner)\n- Free-text notes;
+
+|System|
+
+if (Mandatory fields complete?\n(day, cell count, grade)) then (no)
+  :Block submission;\nHighlight missing fields;
+  |Lab Technician|
+  :Correct missing fields;
+  |System|
+else (yes)
+endif
+
+if (Value outside expected range?) then (yes)
+  :Warn technician;\nAllow entry with\nmandatory confirmation note;
+  |Lab Technician|
+  :Confirm deviation with note;
+  |System|
+else (no)
+endif
+
+:Save entry as immutable;\nTimestamp + technician ID;
+:Update doctor and patient dashboards;
+
+|Lab Technician|
+
+if (Attach microscopy image?) then (yes)
+  if (Image ≤ 10 MB?) then (no)
+    :Show size error;
+    :Skip image upload;
+  else (yes)
+    :Upload microscopy image;
+  endif
+else (no)
+endif
+
+if (Freeze embryo?) then (yes)
+  :Enter cryopreservation details:\n- Storage tank\n- Cane\n- Straw position\n- Freezing date\n- Vitrification method;
+
+  |System|
+
+  :Record cryopreservation event;\nSet embryo status = Frozen;
+  :Link storage location\nto embryo record;
+
+  |Lab Technician|
+
+else (no)
+endif
+
+if (Doctor freeze/transfer\ninstruction present?) then (yes)
+  |System|
+  :Highlight doctor instruction\nprominently;
+  |Lab Technician|
+else (no)
+endif
+
+:Confirm submission;
+
+stop
+
+@enduml

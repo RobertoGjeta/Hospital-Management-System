@@ -1,0 +1,77 @@
+@startuml SeqD_LT_05_Manage_Equipment_QC
+
+title SeqD_LT_05 — Manage Lab Equipment Records & Perform QC Checks
+
+actor "Lab Technician" as LT
+participant "Equipment UI" as UI
+participant "LabTechnicianController" as CTRL
+participant "LabTechnicianService" as SVC
+participant "AppDbContext" as DB
+
+== View Equipment List ==
+
+LT -> UI : Navigate to Equipment Management
+UI -> CTRL : GET /api/labtechnician/equipment
+CTRL -> SVC : GetEquipmentListAsync()
+SVC -> DB : SELECT equipment ORDER BY instrument_name
+DB --> SVC : equipment list
+SVC --> CTRL : list
+CTRL --> UI : 200 OK — equipment list
+UI --> LT : Display list; highlight overdue\nor due within 7 days
+
+== Update Equipment Record ==
+
+LT -> UI : Select instrument → update calibration\ndate, status, note
+UI -> CTRL : PATCH /api/labtechnician/equipment\n{equipmentId, calibrationDate, status, note}
+CTRL -> SVC : UpdateEquipmentAsync(dto, techId)
+SVC -> DB : SELECT equipment WHERE id = dto.EquipmentId
+
+alt Equipment not found
+  DB --> SVC : null
+  SVC --> CTRL : KeyNotFoundException
+  CTRL --> UI : 404 Not Found
+  UI --> LT : Equipment record not found
+end
+
+SVC -> DB : UPDATE LabEquipment\n(calibration dates, status, note, timestamp, techId)
+DB --> SVC : updated
+
+alt Calibration still overdue
+  SVC -> DB : SET status = 'CalibrationRequired'
+  DB --> SVC : done
+end
+
+SVC --> CTRL : updated LabEquipment
+CTRL --> UI : 200 OK
+UI --> LT : Equipment record updated
+
+== Record QC Check ==
+
+LT -> UI : Select "Record QC Check"\nEnter result values → Pass or Fail
+UI -> CTRL : POST /api/labtechnician/equipment/qc-check\n{equipmentId, reagentLotNumber, result, correctiveAction?}
+CTRL -> SVC : RecordQcCheckAsync(dto, techId)
+
+alt Result = Fail AND corrective action missing
+  SVC --> CTRL : ArgumentException
+  CTRL --> UI : 400 Bad Request
+  UI --> LT : Corrective action required for Fail
+end
+
+SVC -> DB : INSERT QcRecord\n(equipmentId, result, correctiveAction, timestamp, techId)
+
+alt Result = Fail
+  SVC -> DB : UPDATE LabEquipment SET status = 'OutOfService'
+  DB --> SVC : instrument blocked from patient testing
+end
+
+alt Result = Pass AND instrument was previously blocked
+  SVC -> DB : UPDATE LabEquipment SET status = 'Active'
+  DB --> SVC : instrument restored
+end
+
+DB --> SVC : QC record saved
+SVC --> CTRL : QcRecord
+CTRL --> UI : 201 Created
+UI --> LT : QC result recorded;\nInstrument status updated
+
+@enduml

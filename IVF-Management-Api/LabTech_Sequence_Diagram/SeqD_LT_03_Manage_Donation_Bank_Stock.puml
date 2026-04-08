@@ -1,0 +1,75 @@
+@startuml SeqD_LT_03_Manage_Donation_Bank_Stock
+
+title SeqD_LT_03 — Manage Donation Bank Stock & Donor Sample Status
+
+actor "Lab Technician" as LT
+participant "Donation Bank UI" as UI
+participant "LabTechnicianController" as CTRL
+participant "LabTechnicianService" as SVC
+participant "AppDbContext" as DB
+participant "NotificationService" as NOTIF
+
+== View Inventory ==
+
+LT -> UI : Open Donation Bank module
+UI -> CTRL : GET /api/labtechnician/donation-bank
+CTRL -> SVC : GetDonationBankInventoryAsync()
+SVC -> DB : SELECT samples WHERE is_assignable = true
+DB --> SVC : sample list
+SVC --> CTRL : inventory
+CTRL --> UI : 200 OK — inventory
+UI --> LT : Display current stock
+
+== Add New Sample ==
+
+LT -> UI : Select "Add New Sample"\nEnter donor ID, type, qty, date, location
+UI -> CTRL : POST /api/labtechnician/donation-bank/samples
+CTRL -> SVC : AddDonationSampleAsync(dto, techId)
+SVC -> DB : SELECT donor WHERE donor_id = dto.DonorId
+
+alt Donor ID not found
+  DB --> SVC : null
+  SVC --> CTRL : 404 Not Found
+  CTRL --> UI : 404 Not Found
+  UI --> LT : Prompt to register donor first
+end
+
+SVC -> DB : INSERT DonationBankSample (status = Pending)
+SVC -> DB : INSERT SampleCustodyEvent (type = Received)
+SVC -> SVC : CheckLowStockAsync(sampleType)
+
+alt Stock below minimum threshold
+  SVC -> NOTIF : NotifyLowStockAsync(type, count, threshold)
+  NOTIF --> SVC : alert sent to Lab Tech + Hospital Admin
+end
+
+DB --> SVC : sample saved
+SVC --> CTRL : DonationBankSample
+CTRL --> UI : 201 Created
+UI --> LT : Sample added — status: Pending
+
+== Update Screening Status ==
+
+LT -> UI : Select sample → Update Screening Status\nSet: Cleared or Rejected + reason note
+UI -> CTRL : PATCH /api/labtechnician/donation-bank/samples/screening-status
+CTRL -> SVC : UpdateScreeningStatusAsync(dto, techId)
+
+alt Reason note missing
+  SVC --> CTRL : ArgumentException
+  CTRL --> UI : 400 Bad Request — reason note required
+  UI --> LT : Show validation error
+end
+
+SVC -> DB : UPDATE sample SET screening_status, reason_note, is_assignable
+DB --> SVC : updated
+
+alt Status = Rejected
+  SVC -> DB : SET is_assignable = false
+  DB --> SVC : done
+end
+
+SVC --> CTRL : updated sample
+CTRL --> UI : 200 OK
+UI --> LT : Screening status updated
+
+@enduml

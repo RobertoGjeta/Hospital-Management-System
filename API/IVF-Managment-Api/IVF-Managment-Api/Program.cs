@@ -1,8 +1,12 @@
+using IVF_Managment_Api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddSingleton<ILabTechnicianService, LabTechnicianService>();
 
 var app = builder.Build();
 

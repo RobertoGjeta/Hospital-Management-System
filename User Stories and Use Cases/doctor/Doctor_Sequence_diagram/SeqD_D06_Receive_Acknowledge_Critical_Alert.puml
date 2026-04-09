@@ -1,0 +1,70 @@
+@startuml SeqD_D06_Receive_Acknowledge_Critical_Alert
+
+title SeqD_D06 — Receive & Acknowledge Critical Test Result Alert
+
+actor "Lab Technician" as LAB
+participant "NotificationService" as NOTIF
+participant "DoctorController" as CTRL
+participant "DoctorService" as SVC
+participant "AppDbContext" as DB
+participant "Alert UI" as UI
+actor "Doctor" as DOC
+
+== Alert Creation and Delivery ==
+
+LAB -> DB : Upload result and flag as Critical\n(or system auto-detects out-of-range value)
+DB --> SVC : result saved + critical flag
+
+SVC -> DB : INSERT CriticalAlert\n(resultId, patientId, doctorId, timestamp)
+DB --> SVC : alert record created
+
+SVC -> NOTIF : DeliverAlertAsync(doctorId, alertId)
+
+par Parallel delivery
+  NOTIF -> UI : In-system notification (push)
+  NOTIF -> DOC : Email to registered address
+  NOTIF -> DOC : SMS (if configured)
+end
+
+== Doctor Reviews and Acknowledges ==
+
+DOC -> UI : Open alert notification
+UI -> CTRL : GET /api/doctor/alerts/{alertId}
+CTRL -> SVC : GetAlertAsync(alertId, doctorId)
+SVC -> DB : SELECT alert + result + patient details
+DB --> SVC : full alert data
+SVC --> CTRL : alert with result report
+CTRL --> UI : 200 OK — alert details
+UI --> DOC : Display alert:\npatient name, test name, critical value,\nreference range + link to full result
+
+DOC -> UI : Review full result report
+
+alt Alert is a false flag
+  DOC -> UI : Mark as "False Flag" + enter mandatory note
+  UI -> CTRL : PATCH /api/doctor/alerts/{alertId}/false-flag\n{note}
+  CTRL -> SVC : MarkFalseFlag(alertId, note, doctorId)
+  SVC -> DB : INSERT AuditLog (false flag note)\nKeep original alert intact
+  DB --> SVC : logged
+  SVC --> CTRL : success
+  CTRL --> UI : 200 OK
+  UI --> DOC : False flag recorded
+end
+
+DOC -> UI : Click "Acknowledge & Review"
+UI -> CTRL : PATCH /api/doctor/alerts/{alertId}/acknowledge
+CTRL -> SVC : AcknowledgeAlertAsync(alertId, doctorId)
+SVC -> DB : UPDATE CriticalAlert\nSET status = Acknowledged,\nacknowledged_at = now(),\nacknowledged_by = doctorId
+DB --> SVC : updated
+SVC --> CTRL : success
+CTRL --> UI : 200 OK
+UI --> DOC : Alert status updated to Acknowledged
+
+== Escalation if Not Acknowledged ==
+
+alt Doctor does not acknowledge within 30 minutes
+  SVC -> NOTIF : EscalateAlertAsync(alertId)
+  NOTIF -> DOC : Second escalation alert
+  NOTIF -> DB : Notify on-call supervisor
+end
+
+@enduml

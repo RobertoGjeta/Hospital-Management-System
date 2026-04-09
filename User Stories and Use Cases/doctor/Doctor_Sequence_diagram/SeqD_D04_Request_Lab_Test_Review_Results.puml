@@ -1,0 +1,75 @@
+@startuml SeqD_D04_Request_Lab_Test_Review_Results
+
+title SeqD_D04 — Request Lab Test & Review Results
+
+actor "Doctor" as DOC
+participant "Lab Test UI" as UI
+participant "DoctorController" as CTRL
+participant "DoctorService" as SVC
+participant "AppDbContext" as DB
+participant "NotificationService" as NOTIF
+actor "Lab Technician" as LAB
+
+== Request Lab Test ==
+
+DOC -> UI : Open patient profile → Lab Tests → "Request New Test"
+UI -> CTRL : GET /api/doctor/lab-tests/catalogue
+CTRL -> SVC : GetTestCatalogueAsync()
+SVC -> DB : SELECT test catalogue
+DB --> SVC : test list
+SVC --> CTRL : catalogue
+CTRL --> UI : 200 OK — test catalogue
+UI --> DOC : Display filterable test catalogue
+
+DOC -> UI : Select test(s), set priority (Routine/Urgent),\nadd clinical instructions
+UI -> CTRL : POST /api/doctor/lab-tests/orders\n{patientId, tests[], priority, instructions}
+CTRL -> CTRL : Validate required fields
+
+alt Required fields missing
+  CTRL --> UI : 400 Bad Request
+  UI --> DOC : Highlight missing fields
+end
+
+CTRL -> SVC : CreateTestOrderAsync(dto, doctorId)
+SVC -> DB : INSERT TestOrder\n(patient_id, doctor_id, tests, priority, instructions)
+SVC -> NOTIF : NotifyLabTechnicianAsync(orderId)
+NOTIF --> SVC : lab notified
+DB --> SVC : order saved
+SVC --> CTRL : TestOrder
+CTRL --> UI : 201 Created
+UI --> DOC : Test order confirmed
+
+== Lab Technician Processes and Uploads Result ==
+
+LAB -> DB : Upload result + link to order
+DB --> SVC : result saved
+
+alt Result abnormal / critical
+  SVC -> NOTIF : NotifyDoctorCriticalAsync(doctorId, resultId)
+  NOTIF --> DOC : Critical alert — in-system + email
+else Result normal
+  SVC -> NOTIF : NotifyDoctorResultReadyAsync(doctorId, resultId)
+  NOTIF --> DOC : Standard result-ready notification
+end
+
+== Review Result ==
+
+DOC -> UI : Open patient profile → view test result
+UI -> CTRL : GET /api/doctor/patients/{patientId}/lab-results/{resultId}
+CTRL -> SVC : GetLabResultAsync(resultId, doctorId)
+SVC -> DB : SELECT result WHERE result_id = resultId
+DB --> SVC : full result report
+SVC --> CTRL : result data
+CTRL --> UI : 200 OK — result report
+UI --> DOC : Display full result linked to original order
+
+DOC -> UI : Acknowledge result
+UI -> CTRL : PATCH /api/doctor/lab-results/{resultId}/acknowledge
+CTRL -> SVC : AcknowledgeResultAsync(resultId, doctorId)
+SVC -> DB : UPDATE result SET acknowledged_at = now(), acknowledged_by = doctorId
+DB --> SVC : updated
+SVC --> CTRL : success
+CTRL --> UI : 200 OK
+UI --> DOC : Result acknowledged and recorded
+
+@enduml

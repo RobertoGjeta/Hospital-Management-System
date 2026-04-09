@@ -1,0 +1,66 @@
+@startuml SeqD_D05_View_Embryo_Development_Authorize_Phase
+
+title SeqD_D05 — View Embryo Development & Authorize IVF Phase Transition
+
+actor "Doctor" as DOC
+participant "Embryology UI" as UI
+participant "DoctorController" as CTRL
+participant "DoctorService" as SVC
+participant "AppDbContext" as DB
+participant "NotificationService" as NOTIF
+
+== View Embryo Development ==
+
+DOC -> UI : Open patient profile → Embryology module
+UI -> CTRL : GET /api/doctor/patients/{patientId}/embryos
+CTRL -> SVC : GetEmbryoDataAsync(patientId, doctorId)
+SVC -> DB : SELECT embryos + development entries\n+ lab technician notes\nWHERE cycle_id = activeIvfCycle
+DB --> SVC : embryo list + data
+SVC --> CTRL : embryo development data
+CTRL --> UI : 200 OK — embryo data
+UI --> DOC : Display IVF cycle summary:\ncell count, grade, morphology, lab notes
+
+== Attach Clinical Note to Embryo ==
+
+DOC -> UI : Select embryo → add clinical note\n(Transfer / Cryo / Discard + rationale)
+UI -> CTRL : POST /api/doctor/embryos/{embryoId}/notes\n{instruction, rationale}
+CTRL -> CTRL : Validate instruction and rationale fields
+
+alt Fields missing
+  CTRL --> UI : 400 Bad Request
+  UI --> DOC : Highlight missing fields
+end
+
+CTRL -> SVC : AddEmbryoClinicalNoteAsync(embryoId, dto, doctorId)
+SVC -> DB : INSERT EmbryoClinicalNote\n(immutable, timestamp, doctorId)
+SVC -> NOTIF : NotifyLabTechnicianAsync(embryoId)
+NOTIF --> SVC : lab technician notified
+DB --> SVC : note saved
+SVC --> CTRL : EmbryoClinicalNote
+CTRL --> UI : 201 Created
+UI --> DOC : Clinical note saved and visible to lab team
+
+== Authorize IVF Phase Transition ==
+
+DOC -> UI : Select "Authorize Phase Transition"\nChoose next phase
+UI -> CTRL : POST /api/doctor/cycles/{cycleId}/authorize-phase\n{nextPhase, doctorId}
+CTRL -> SVC : AuthorizePhaseTransitionAsync(cycleId, nextPhase, doctorId)
+SVC -> DB : CHECK current phase conditions met
+
+alt Conditions not met
+  DB --> SVC : outstanding conditions
+  SVC --> CTRL : 409 Conflict — conditions not met
+  CTRL --> UI : 409 Conflict
+  UI --> DOC : Show outstanding conditions to resolve
+end
+
+SVC -> DB : INSERT PhaseAuthorization\n(cycleId, nextPhase, doctorId, timestamp)
+SVC -> DB : UPDATE IvfCycle SET currentPhase = nextPhase
+SVC -> NOTIF : NotifyLabTechnicianAsync(cycleId, nextPhase)
+NOTIF --> SVC : lab technician notified of new phase
+DB --> SVC : phase advanced
+SVC --> CTRL : updated cycle
+CTRL --> UI : 200 OK
+UI --> DOC : Cycle phase advanced — lab team notified
+
+@enduml

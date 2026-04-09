@@ -1,0 +1,70 @@
+@startuml AD_D05_View_Embryo_Development_Authorize_Phase
+
+title AD_D05 — View Embryo Development & Authorize IVF Phase Transition
+
+|Doctor|
+|System|
+
+|Doctor|
+
+note
+  Prerequisites:
+  - Doctor is authenticated
+  - Patient has active IVF cycle
+  - Lab Technician has recorded embryo data
+end note
+
+start
+
+:Open patient profile;
+:Navigate to Embryology module;
+
+|System|
+
+:Display IVF cycle summary:\n- Current phase\n- Embryo list with latest data\n- Cell count, grade, morphology\n- Lab technician notes;
+
+|Doctor|
+
+:Review embryo development data;
+
+if (Add clinical note to embryo?) then (yes)
+  :Select embryo record;
+  :Enter structured note:\n- Instruction: Transfer / Cryo / Discard\n- Written rationale;
+
+  |System|
+
+  :Save clinical note (immutable);\nTimestamp + doctor ID;\nMake visible to Lab Technician;
+else (no)
+endif
+
+|Doctor|
+
+if (Authorize phase transition?) then (yes)
+  :Select next IVF cycle phase\n(e.g., Stimulation → Egg Retrieval);
+
+  |System|
+
+  if (Current phase complete\nand conditions met?) then (no)
+    :Block transition;\nShow outstanding conditions;
+    |Doctor|
+    :Review outstanding conditions;
+  else (yes)
+    |Doctor|
+    :Confirm phase transition\nwith sign-off;
+
+    |System|
+
+    :Record phase authorization:\ndoctor ID + timestamp;
+    :Advance cycle to next phase;
+    :Notify Lab Technician\nof phase transition;
+  endif
+else (no)
+endif
+
+|Doctor|
+
+:Continue clinical review;
+
+stop
+
+@enduml

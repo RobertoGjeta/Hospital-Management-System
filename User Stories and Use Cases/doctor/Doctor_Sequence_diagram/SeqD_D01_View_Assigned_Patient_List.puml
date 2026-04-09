@@ -1,0 +1,65 @@
+@startuml SeqD_D01_View_Assigned_Patient_List
+
+title SeqD_D01 — View Assigned Patient List
+
+actor "Doctor" as DOC
+participant "Patient List UI" as UI
+participant "DoctorController" as CTRL
+participant "DoctorService" as SVC
+participant "AppDbContext" as DB
+
+== Main Sequence ==
+
+DOC -> UI : Navigate to "My Patients"
+UI -> CTRL : GET /api/doctor/patients
+CTRL -> SVC : GetAssignedPatientsAsync(doctorId)
+SVC -> DB : SELECT patients WHERE assigned_doctor_id = doctorId
+DB --> SVC : patient list
+SVC --> CTRL : patient data
+CTRL --> UI : 200 OK — patient list
+UI --> DOC : Display patient list\n(name, ID, DOB, cycle phase, next appointment)
+
+== Apply Filters ==
+
+DOC -> UI : Apply filter (cycle phase / date / name)
+UI -> CTRL : GET /api/doctor/patients?filter=...
+CTRL -> SVC : GetAssignedPatientsAsync(doctorId, filterParams)
+SVC -> DB : SELECT patients WHERE assigned_doctor_id = doctorId\nAND filter criteria
+DB --> SVC : filtered list
+
+alt No results match filter
+  SVC --> CTRL : empty list
+  CTRL --> UI : 200 OK — empty
+  UI --> DOC : Show "No patients match your criteria" + reset button
+end
+
+CTRL --> UI : 200 OK — filtered list
+UI --> DOC : Display filtered patient list
+
+== Select Patient ==
+
+DOC -> UI : Select patient row
+UI -> CTRL : GET /api/doctor/patients/{patientId}
+CTRL -> SVC : GetPatientProfileAsync(patientId, doctorId)
+SVC -> DB : SELECT full medical record WHERE patient_id = patientId
+DB --> SVC : complete patient profile
+SVC --> CTRL : patient profile
+CTRL --> UI : 200 OK — patient profile
+UI --> DOC : Load full patient medical record view
+
+== Alternative: No patients assigned ==
+
+alt No patients assigned to doctor
+  SVC --> CTRL : empty list
+  CTRL --> UI : 200 OK — empty
+  UI --> DOC : Show informational banner\nwith link to contact Administrator
+end
+
+== Alternative: Unauthenticated ==
+
+alt No valid JWT token
+  CTRL --> UI : 401 Unauthorized
+  UI --> DOC : Redirect to login
+end
+
+@enduml

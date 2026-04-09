@@ -1,0 +1,85 @@
+@startuml AD_D03_Create_Manage_Appointments
+
+title AD_D03 — Create and Manage Appointments
+
+|Doctor|
+|System|
+
+|Doctor|
+
+note
+  Prerequisites:
+  - Doctor is authenticated
+  - Patient is assigned to this doctor
+end note
+
+start
+
+:Navigate to Appointment Calendar;
+
+|System|
+
+:Display unified calendar view\nwith upcoming and past appointments;
+
+|Doctor|
+
+:Select action;
+
+if (Action?) then (Create Appointment)
+  :Select patient;
+  :Select appointment type\n(consultation / procedure / follow-up);
+  :Choose date and time slot;
+
+  |System|
+
+  if (Slot available?) then (no)
+    :Show conflict warning;\nSuggest alternative slots;
+    |Doctor|
+    :Select alternative slot;
+    |System|
+  else (yes)
+  endif
+
+  :Create appointment record;
+  :Send automatic notification to patient\n(date, time, appointment type);
+
+else (Reschedule Appointment)
+  |Doctor|
+  :Select existing appointment;
+  :Choose new date and time slot;
+
+  |System|
+
+  if (New slot available?) then (no)
+    :Show conflict warning;\nSuggest alternatives;
+    |Doctor|
+    :Select alternative slot;
+    |System|
+  else (yes)
+  endif
+
+  :Update appointment record;
+  :Send automatic reschedule\nnotification to patient;
+
+else (Cancel Appointment)
+  |Doctor|
+  :Select appointment to cancel;
+  :Enter cancellation reason;
+
+  |System|
+
+  :Cancel appointment record;
+  :Send cancellation notification\nto patient;
+endif
+
+|System|
+
+:Update calendar view;
+
+|Doctor|
+
+:View updated calendar;
+
+stop
+
+@enduml

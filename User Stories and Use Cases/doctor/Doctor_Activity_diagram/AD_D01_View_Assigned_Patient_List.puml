@@ -1,0 +1,66 @@
+@startuml AD_D01_View_Assigned_Patient_List
+
+title AD_D01 — View Assigned Patient List
+
+|Doctor|
+|System|
+
+|Doctor|
+
+note
+  Prerequisites:
+  - Doctor is authenticated and has active session
+  - At least one patient assigned by Administrator
+end note
+
+start
+
+:Navigate to "My Patients"\nfrom main dashboard;
+
+|System|
+
+:Retrieve all patients assigned\nto the logged-in doctor;
+
+if (Patients found?) then (no)
+  :Show informational banner;\nProvide link to contact Administrator;
+  |Doctor|
+  stop
+else (yes)
+  :Display patient list:\n- Full name\n- Patient ID\n- Date of birth\n- Active IVF cycle phase\n- Next appointment date/time;
+endif
+
+|Doctor|
+
+if (Apply filters?) then (yes)
+  :Select filter criteria:\n(cycle phase / date / name);
+
+  |System|
+
+  :Refresh list to match\nfilter criteria;
+
+  if (Results found?) then (no)
+    :Display "No patients match\nyour criteria" message;\nShow reset button;
+    |Doctor|
+    :Reset filters or\nrefine criteria;
+    |System|
+    :Show full unfiltered list;
+  else (yes)
+  endif
+else (no)
+endif
+
+|Doctor|
+
+:Select patient row;
+
+|System|
+
+:Load patient's complete\nmedical record view;
+
+|Doctor|
+
+:View patient profile\nand take clinical action;
+
+stop
+
+@enduml

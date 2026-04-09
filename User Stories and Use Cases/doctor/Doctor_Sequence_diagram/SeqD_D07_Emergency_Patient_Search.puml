@@ -1,0 +1,70 @@
+@startuml SeqD_D07_Emergency_Patient_Search
+
+title SeqD_D07 — Search Patient by ID or Name (Emergency Access)
+
+actor "Doctor" as DOC
+participant "Global Search UI" as UI
+participant "DoctorController" as CTRL
+participant "DoctorService" as SVC
+participant "AppDbContext" as DB
+participant "NotificationService" as NOTIF
+
+== Search ==
+
+DOC -> UI : Type patient name or Patient ID\nin global search bar
+UI -> CTRL : GET /api/doctor/patients/search?query=...
+CTRL -> SVC : SearchAllPatientsAsync(query)
+SVC -> DB : SELECT patients WHERE name LIKE query\nOR patient_id = query\n(ALL records, not restricted to assigned list)
+DB --> SVC : results
+
+alt No patient found
+  SVC --> CTRL : empty list
+  CTRL --> UI : 200 OK — empty
+  UI --> DOC : "No matching patient record found"\nSuggest verifying ID with Administrator
+end
+
+SVC --> CTRL : patient list
+CTRL --> UI : 200 OK — results
+UI --> DOC : Display results:\nname, Patient ID, DOB (partially masked),\nassigned doctor name
+
+== Emergency Access Modal ==
+
+DOC -> UI : Select target patient
+UI --> DOC : Show mandatory "Emergency Access" modal:\n"You are about to access a patient not assigned to you.\nThis access will be logged and the assigned doctor notified.\nPlease state your clinical reason."
+
+DOC -> UI : Enter clinical reason + confirm
+
+alt Doctor cancels without submitting
+  UI -> CTRL : POST /api/doctor/patients/{patientId}/emergency-access/declined
+  CTRL -> SVC : LogAccessAttemptAsync(patientId, doctorId, Declined)
+  SVC -> DB : INSERT AuditLog (status = Declined by User)
+  DB --> SVC : logged
+  CTRL --> UI : 403 Forbidden
+  UI --> DOC : Access blocked
+end
+
+alt Reason fewer than 10 characters
+  UI --> DOC : Reject — highlight minimum character requirement
+end
+
+UI -> CTRL : POST /api/doctor/patients/{patientId}/emergency-access\n{reason}
+CTRL -> SVC : GrantEmergencyAccessAsync(patientId, doctorId, reason)
+
+SVC -> DB : INSERT EmergencyAccessLog\n(requestingDoctorId, patientId,\ntimestamp, reason) — immutable
+SVC -> DB : SELECT full patient medical record (read-only)
+DB --> SVC : patient profile
+SVC -> NOTIF : NotifyAssignedDoctorAsync(patientId, requestingDoctorId)
+NOTIF --> SVC : assigned doctor notified
+
+SVC --> CTRL : read-only patient profile
+CTRL --> UI : 200 OK — patient record (read-only session)
+UI --> DOC : Display patient full record\n(read-only — no add/edit/test request actions available)
+
+== Alternative: Session ends ==
+
+alt Session ends or doctor logs out
+  SVC -> DB : Revoke emergency access token
+  DB --> SVC : access revoked
+end
+
+@enduml

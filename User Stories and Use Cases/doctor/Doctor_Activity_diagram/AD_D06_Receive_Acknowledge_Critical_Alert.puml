@@ -1,0 +1,73 @@
+@startuml AD_D06_Receive_Acknowledge_Critical_Alert
+
+title AD_D06 — Receive & Acknowledge Critical Test Result Alert
+
+|Doctor|
+|System|
+|Lab Technician|
+
+|Lab Technician|
+
+note
+  Prerequisites:
+  - Doctor is authenticated
+  - Lab test order exists for the patient
+  - Result uploaded and flagged critical
+end note
+
+start
+
+:Upload test result;\nFlag as Critical manually\nor system auto-detects\nout-of-range value;
+
+|System|
+
+:Create urgent alert record linked to:\n- Result\n- Patient\n- Requesting doctor;
+
+fork
+  :Send in-system notification;
+fork again
+  :Send email to doctor's\nregistered address;
+fork again
+  :Send SMS (if configured);
+end fork
+
+|Doctor|
+
+:Receive alert via configured channels;
+:Open patient record\nvia alert link;
+
+|System|
+
+:Display full result report\nwith critical value highlighted;
+
+|Doctor|
+
+:Review full result report;
+
+if (Alert is a false flag?) then (yes)
+  :Mark alert as "False Flag";\nAdd mandatory note;
+
+  |System|
+
+  :Audit-log false flag note;\nKeep original alert intact;
+else (no)
+  |Doctor|
+  :Click "Acknowledge & Review";
+
+  |System|
+
+  :Timestamp acknowledgement\n+ record doctor ID;
+  :Update alert status\nto "Acknowledged";
+endif
+
+|System|
+
+if (Acknowledgement within\n30-minute window?) then (no)
+  :Send second escalation alert\nto doctor;
+  :Notify on-call supervisor;
+else (yes)
+endif
+
+stop
+
+@enduml

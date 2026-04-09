@@ -1,0 +1,55 @@
+@startuml SeqD_D02_Add_Update_Medical_Record
+
+title SeqD_D02 — Add / Update Medical Record
+
+actor "Doctor" as DOC
+participant "Medical Record UI" as UI
+participant "DoctorController" as CTRL
+participant "DoctorService" as SVC
+participant "AppDbContext" as DB
+
+== Main Sequence ==
+
+DOC -> UI : Open patient profile
+UI -> CTRL : GET /api/doctor/patients/{patientId}/records
+CTRL -> SVC : GetMedicalRecordAsync(patientId, doctorId)
+SVC -> DB : SELECT records WHERE patient_id = patientId\nORDER BY created_at DESC
+DB --> SVC : full medical record
+SVC --> CTRL : medical record data
+CTRL --> UI : 200 OK — medical record
+UI --> DOC : Display full record (diagnoses, prescriptions,\ntest results, treatment plans, allergies)
+
+DOC -> UI : Click "Add Entry"\nSelect entry type + complete fields
+UI -> CTRL : POST /api/doctor/patients/{patientId}/records\n{entryType, fields, attachments?}
+
+CTRL -> CTRL : Validate required fields for entry type
+
+alt Required fields missing
+  CTRL --> UI : 400 Bad Request — missing fields
+  UI --> DOC : Highlight missing fields
+end
+
+alt Supporting file attached
+  CTRL -> CTRL : Validate file type and size
+  alt File invalid
+    CTRL --> UI : 400 Bad Request — invalid file
+    UI --> DOC : Show file validation error
+  end
+end
+
+CTRL -> SVC : AddMedicalRecordEntryAsync(patientId, dto, doctorId)
+SVC -> DB : INSERT MedicalRecordEntry\n(immutable, timestamp, doctorId)
+DB --> SVC : entry saved
+SVC --> CTRL : MedicalRecordEntry
+CTRL --> UI : 201 Created
+UI --> DOC : Display updated medical record\nwith new entry at top
+
+== Alternative: Patient not assigned to doctor ==
+
+alt Patient not on doctor's assigned list
+  SVC --> CTRL : 403 Forbidden
+  CTRL --> UI : 403 Forbidden
+  UI --> DOC : Access denied — patient not assigned to you
+end
+
+@enduml

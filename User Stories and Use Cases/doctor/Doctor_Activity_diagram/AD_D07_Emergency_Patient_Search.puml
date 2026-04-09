@@ -1,0 +1,69 @@
+@startuml AD_D07_Emergency_Patient_Search
+
+title AD_D07 — Search Patient by ID or Name (Emergency Access)
+
+|Doctor|
+|System|
+
+|Doctor|
+
+note
+  Prerequisites:
+  - Doctor is authenticated
+  - Target patient is registered in system
+  - Patient is NOT on doctor's assigned list
+end note
+
+start
+
+:Type patient name or Patient ID\ninto global search bar;
+
+|System|
+
+:Search all registered patient records\n(not restricted to assigned list);
+
+if (Patient found?) then (no)
+  :Display "No matching patient\nrecord found";\nSuggest verifying ID with Administrator;
+  |Doctor|
+  stop
+else (yes)
+  :Return results list:\n- Patient name\n- Patient ID\n- Date of birth (partially masked)\n- Assigned doctor name;
+endif
+
+|Doctor|
+
+:Select target patient from results;
+
+|System|
+
+:Intercept navigation;\nDisplay mandatory "Emergency Access" modal:\n"You are about to access a patient\nnot assigned to you.\nThis access will be logged and the\nassigned doctor will be notified.\nPlease state your clinical reason.";
+
+|Doctor|
+
+if (Enter clinical reason\nand confirm?) then (no — cancelled)
+  |System|
+  :Block access;\nLog attempt as "Declined by User";
+  stop
+else (yes)
+endif
+
+if (Reason ≥ 10 characters?) then (no)
+  |System|
+  :Reject submission;\nHighlight minimum character requirement;
+  |Doctor|
+  :Enter longer reason;
+  |System|
+else (yes)
+endif
+
+:Grant read-only access\nto patient full record\nfor current session only;
+:Create immutable audit log entry:\n- Requesting doctor ID\n- Patient ID\n- Timestamp\n- Stated reason;
+:Send automated notification\nto patient's assigned doctor;
+
+|Doctor|
+
+:View patient record\n(read-only);
+
+stop
+
+@enduml

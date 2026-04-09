@@ -1,0 +1,84 @@
+@startuml AD_D02_Add_Update_Medical_Record
+
+title AD_D02 — Add / Update Medical Record
+
+|Doctor|
+|System|
+
+|Doctor|
+
+note
+  Prerequisites:
+  - Doctor is authenticated
+  - Target patient is assigned to this doctor
+  - Patient record exists in system
+end note
+
+start
+
+:Open patient profile\nfrom patient list;
+
+|System|
+
+:Retrieve and display full medical record:\n- Past diagnoses\n- Prescriptions\n- Test results\n- Treatment plans\n- Allergies\n- IVF cycle entries\n(sorted chronologically);
+
+|Doctor|
+
+:Review existing entries\nfor clinical context;
+:Click "Add Entry";
+:Select entry type;
+
+if (Entry type?) then (Clinical Note)
+  :Complete clinical note fields;
+
+else (Diagnosis)
+  :Complete diagnosis fields\n(ICD code, description, date);
+
+else (Prescription)
+  :Complete prescription fields\n(drug, dose, frequency, duration);
+
+else (Treatment Plan Update)
+  :Complete treatment plan\nupdate fields;
+endif
+
+|Doctor|
+
+if (Upload supporting file?) then (yes)
+  :Attach supporting file\n(scan image, report);
+
+  |System|
+
+  if (File valid?) then (no)
+    :Show file validation error;
+    |Doctor|
+    :Correct and re-attach;
+    |System|
+  else (yes)
+  endif
+else (no)
+endif
+
+|Doctor|
+
+:Review entry before saving;
+
+|System|
+
+if (All required fields complete?) then (no)
+  :Highlight missing fields;\nBlock submission;
+  |Doctor|
+  :Complete missing fields;
+  |System|
+else (yes)
+endif
+
+:Save entry as immutable record;\nTimestamp + doctor ID;
+:Display updated medical record;
+
+|Doctor|
+
+:View saved entry\nin patient record;
+
+stop
+
+@enduml

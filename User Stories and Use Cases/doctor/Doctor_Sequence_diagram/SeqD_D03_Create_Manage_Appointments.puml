@@ -1,0 +1,74 @@
+@startuml SeqD_D03_Create_Manage_Appointments
+
+title SeqD_D03 — Create and Manage Appointments
+
+actor "Doctor" as DOC
+participant "Calendar UI" as UI
+participant "DoctorController" as CTRL
+participant "DoctorService" as SVC
+participant "AppDbContext" as DB
+participant "NotificationService" as NOTIF
+
+== View Calendar ==
+
+DOC -> UI : Navigate to Appointment Calendar
+UI -> CTRL : GET /api/doctor/appointments
+CTRL -> SVC : GetAppointmentsAsync(doctorId)
+SVC -> DB : SELECT appointments WHERE doctor_id = doctorId
+DB --> SVC : appointment list
+SVC --> CTRL : appointments
+CTRL --> UI : 200 OK — appointments
+UI --> DOC : Display unified calendar view
+
+== Create Appointment ==
+
+DOC -> UI : Select patient, type, date, time slot
+UI -> CTRL : POST /api/doctor/appointments\n{patientId, type, dateTime}
+CTRL -> SVC : CreateAppointmentAsync(dto, doctorId)
+SVC -> DB : SELECT slots WHERE dateTime = dto.DateTime\nAND doctor_id = doctorId
+
+alt Slot not available
+  DB --> SVC : conflict found
+  SVC --> CTRL : 409 Conflict
+  CTRL --> UI : 409 Conflict — suggest alternatives
+  UI --> DOC : Show conflict warning + alternative slots
+end
+
+SVC -> DB : INSERT Appointment record
+SVC -> NOTIF : NotifyPatientAsync(patientId, appointmentDetails)
+NOTIF --> SVC : notification sent
+DB --> SVC : appointment saved
+SVC --> CTRL : Appointment
+CTRL --> UI : 201 Created
+UI --> DOC : Calendar updated — appointment confirmed
+
+== Reschedule Appointment ==
+
+DOC -> UI : Select existing appointment → reschedule\nChoose new date/time
+UI -> CTRL : PATCH /api/doctor/appointments/{appointmentId}\n{newDateTime}
+CTRL -> SVC : RescheduleAppointmentAsync(appointmentId, newDateTime, doctorId)
+SVC -> DB : CHECK availability for newDateTime
+DB --> SVC : available
+
+SVC -> DB : UPDATE Appointment SET dateTime = newDateTime
+SVC -> NOTIF : NotifyPatientAsync(patientId, rescheduleDetails)
+NOTIF --> SVC : reschedule notification sent
+DB --> SVC : updated
+SVC --> CTRL : updated Appointment
+CTRL --> UI : 200 OK
+UI --> DOC : Calendar updated — reschedule confirmed
+
+== Cancel Appointment ==
+
+DOC -> UI : Select appointment → cancel\nEnter cancellation reason
+UI -> CTRL : DELETE /api/doctor/appointments/{appointmentId}\n{reason}
+CTRL -> SVC : CancelAppointmentAsync(appointmentId, reason, doctorId)
+SVC -> DB : UPDATE Appointment SET status = Cancelled, reason = reason
+SVC -> NOTIF : NotifyPatientAsync(patientId, cancellationDetails)
+NOTIF --> SVC : cancellation notification sent
+DB --> SVC : cancelled
+SVC --> CTRL : success
+CTRL --> UI : 200 OK
+UI --> DOC : Calendar updated — appointment cancelled
+
+@enduml

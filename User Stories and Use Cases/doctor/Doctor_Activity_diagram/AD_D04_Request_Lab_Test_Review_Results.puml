@@ -1,0 +1,81 @@
+@startuml AD_D04_Request_Lab_Test_Review_Results
+
+title AD_D04 — Request Lab Test & Review Results
+
+|Doctor|
+|System|
+|Lab Technician|
+
+|Doctor|
+
+note
+  Prerequisites:
+  - Doctor is authenticated
+  - Patient is assigned to this doctor
+  - Lab test catalogue is configured
+end note
+
+start
+
+:Open patient profile;
+:Navigate to Lab Tests section;
+:Click "Request New Test";
+
+|System|
+
+:Display test catalogue\n(filterable by category);
+
+|Doctor|
+
+:Select test(s) from catalogue;
+:Set priority: Routine or Urgent;
+:Add clinical instructions\n(e.g., fasting required, notes for lab);
+
+|System|
+
+if (All required fields complete?) then (no)
+  :Highlight missing fields;
+  |Doctor|
+  :Complete missing fields;
+  |System|
+else (yes)
+endif
+
+:Create test order linked to:\n- Patient record\n- Doctor ID\n- Priority + instructions;
+:Notify Lab Technician of new order;
+
+|Lab Technician|
+
+:Process test order;
+:Upload result + flag if abnormal;
+
+|System|
+
+:Link result to patient record\nand original doctor order;
+
+if (Result abnormal / critical?) then (yes)
+  :Trigger critical alert to doctor\n(in-system + email);
+else (no)
+  :Send standard result-ready\nnotification to doctor;
+endif
+
+|Doctor|
+
+:Open patient profile;\nNavigate to test results;
+
+|System|
+
+:Display result report\nlinked to the original order;
+
+|Doctor|
+
+:Review full result report;
+:Acknowledge result;
+
+|System|
+
+:Record acknowledgement:\ntimestamp + doctor ID;
+
+stop
+
+@enduml

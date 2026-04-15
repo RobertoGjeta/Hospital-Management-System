@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
-using System.Security.Cryptography;
-using System.Text;
 using IVF_Managment_Api.Models;
+using IVFClinic.Models;
 
 namespace IVF_Managment_Api.Services;
 
@@ -9,9 +8,6 @@ public class LabTechnicianService : ILabTechnicianService
 {
     // In-memory store until a persistence layer (EF Core / DbContext) is wired up.
     private readonly ConcurrentDictionary<Guid, LabTechnician> _technicians = new();
-
-    private const int MaxFailedLoginAttempts = 5;
-    private static readonly TimeSpan LockoutDuration = TimeSpan.FromMinutes(15);
 
     public Task<IEnumerable<LabTechnician>> GetAllAsync()
     {
@@ -43,11 +39,8 @@ public class LabTechnicianService : ILabTechnicianService
         return Task.FromResult(technician);
     }
 
-    public async Task<LabTechnician> CreateAsync(LabTechnician technician, string password)
+    public async Task<LabTechnician> CreateAsync(LabTechnician technician)
     {
-        if (string.IsNullOrWhiteSpace(password))
-            throw new ArgumentException("Password is required.", nameof(password));
-
         if (await GetByUsernameAsync(technician.Username) is not null)
             throw new InvalidOperationException($"Username '{technician.Username}' is already taken.");
 
@@ -55,12 +48,9 @@ public class LabTechnicianService : ILabTechnicianService
             throw new InvalidOperationException($"Email '{technician.Email}' is already registered.");
 
         technician.Id = technician.Id == Guid.Empty ? Guid.NewGuid() : technician.Id;
-        technician.PasswordHash = HashPassword(password);
-        technician.PasswordChangedAt = DateTime.UtcNow;
         technician.CreatedAt = DateTime.UtcNow;
         technician.UpdatedAt = DateTime.UtcNow;
         technician.IsActive = true;
-        technician.FailedLoginAttempts = 0;
 
         _technicians[technician.Id] = technician;
         return technician;
@@ -110,87 +100,7 @@ public class LabTechnicianService : ILabTechnicianService
             return Task.FromResult(false);
 
         technician.IsActive = true;
-        technician.FailedLoginAttempts = 0;
-        technician.AccountLockedUntil = null;
         technician.UpdatedAt = DateTime.UtcNow;
         return Task.FromResult(true);
-    }
-
-    public Task<bool> ChangePasswordAsync(Guid id, string currentPassword, string newPassword)
-    {
-        if (string.IsNullOrWhiteSpace(newPassword))
-            throw new ArgumentException("New password is required.", nameof(newPassword));
-
-        if (!_technicians.TryGetValue(id, out var technician))
-            return Task.FromResult(false);
-
-        if (!VerifyPassword(currentPassword, technician.PasswordHash))
-            return Task.FromResult(false);
-
-        technician.PasswordHash = HashPassword(newPassword);
-        technician.PasswordChangedAt = DateTime.UtcNow;
-        technician.UpdatedAt = DateTime.UtcNow;
-        return Task.FromResult(true);
-    }
-
-    public async Task<LabTechnician?> ValidateCredentialsAsync(string usernameOrEmail, string password)
-    {
-        var technician = await GetByUsernameAsync(usernameOrEmail)
-                         ?? await GetByEmailAsync(usernameOrEmail);
-
-        if (technician is null || !technician.IsActive)
-            return null;
-
-        if (technician.AccountLockedUntil.HasValue && technician.AccountLockedUntil > DateTime.UtcNow)
-            return null;
-
-        if (!VerifyPassword(password, technician.PasswordHash))
-        {
-            await RegisterFailedLoginAsync(technician.Id);
-            return null;
-        }
-
-        await RegisterSuccessfulLoginAsync(technician.Id);
-        return technician;
-    }
-
-    public Task RegisterFailedLoginAsync(Guid id)
-    {
-        if (!_technicians.TryGetValue(id, out var technician))
-            return Task.CompletedTask;
-
-        technician.FailedLoginAttempts++;
-        if (technician.FailedLoginAttempts >= MaxFailedLoginAttempts)
-            technician.AccountLockedUntil = DateTime.UtcNow.Add(LockoutDuration);
-
-        technician.UpdatedAt = DateTime.UtcNow;
-        return Task.CompletedTask;
-    }
-
-    public Task RegisterSuccessfulLoginAsync(Guid id)
-    {
-        if (!_technicians.TryGetValue(id, out var technician))
-            return Task.CompletedTask;
-
-        technician.FailedLoginAttempts = 0;
-        technician.AccountLockedUntil = null;
-        technician.LastLoginAt = DateTime.UtcNow;
-        technician.UpdatedAt = DateTime.UtcNow;
-        return Task.CompletedTask;
-    }
-
-    private static string HashPassword(string password)
-    {
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
-        return Convert.ToBase64String(bytes);
-    }
-
-    private static bool VerifyPassword(string password, string hash)
-    {
-        if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hash))
-            return false;
-        return CryptographicOperations.FixedTimeEquals(
-            Encoding.UTF8.GetBytes(HashPassword(password)),
-            Encoding.UTF8.GetBytes(hash));
     }
 }

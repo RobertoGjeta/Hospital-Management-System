@@ -1,26 +1,33 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\eljad\\OneDrive\\Desktop\\Software Engeneering Project\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj": {}
+    "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\eljad\\OneDrive\\Desktop\\Software Engeneering Project\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj": {
+    "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\eljad\\OneDrive\\Desktop\\Software Engeneering Project\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
+        "projectUniqueName": "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
         "projectName": "IVF-Managment-Api",
-        "projectPath": "C:\\Users\\eljad\\OneDrive\\Desktop\\Software Engeneering Project\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
-        "packagesPath": "C:\\Users\\eljad\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\eljad\\OneDrive\\Desktop\\Software Engeneering Project\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\obj\\",
+        "projectPath": "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
+        "packagesPath": "C:\\Users\\armen\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\eljad\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\armen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
         ],
         "sources": {
-          "https://api.nuget.org/v3/index.json": {}
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://pkgs.dev.azure.com/bettertrucks-rehersal/_packaging/bettertrucks-rehersal/nuget/v3/index.json": {}
         },
         "frameworks": {
           "net10.0": {
@@ -47,6 +54,10 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[10.0.2, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[10.0.0, )"
             }
           },
           "imports": [
@@ -68,7 +79,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

@@ -1,4 +1,5 @@
 using IVF_Managment_Api.Models;
+using IVFClinic.Models;
 
 namespace IVF_Managment_Api.Services;
 
@@ -14,7 +15,7 @@ public interface ILabTechnicianService
 
     Task<LabTechnician?> GetByEmailAsync(string email);
 
-    Task<LabTechnician> CreateAsync(LabTechnician technician, string password);
+    Task<LabTechnician> CreateAsync(LabTechnician technician);
 
     Task<LabTechnician?> UpdateAsync(Guid id, LabTechnician updated);
 
@@ -23,12 +24,4 @@ public interface ILabTechnicianService
     Task<bool> DeactivateAsync(Guid id);
 
     Task<bool> ActivateAsync(Guid id);
-
-    Task<bool> ChangePasswordAsync(Guid id, string currentPassword, string newPassword);
-
-    Task<LabTechnician?> ValidateCredentialsAsync(string usernameOrEmail, string password);
-
-    Task RegisterFailedLoginAsync(Guid id);
-
-    Task RegisterSuccessfulLoginAsync(Guid id);
 }

@@ -1,11 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "q4QyaOm/lvk=",
+  "dgSpecHash": "ZNxgRK8Appo=",
   "success": true,
-  "projectFilePath": "C:\\Users\\eljad\\OneDrive\\Desktop\\Software Engeneering Project\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
+  "projectFilePath": "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\eljad\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.2\\microsoft.aspnetcore.openapi.10.0.2.nupkg.sha512",
-    "C:\\Users\\eljad\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512"
+    "C:\\Users\\armen\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.2\\microsoft.aspnetcore.openapi.10.0.2.nupkg.sha512",
+    "C:\\Users\\armen\\.nuget\\packages\\microsoft.entityframeworkcore\\10.0.0\\microsoft.entityframeworkcore.10.0.0.nupkg.sha512",
+    "C:\\Users\\armen\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\10.0.0\\microsoft.entityframeworkcore.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\armen\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\10.0.0\\microsoft.entityframeworkcore.analyzers.10.0.0.nupkg.sha512",
+    "C:\\Users\\armen\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512"
   ],
   "logs": []
 }

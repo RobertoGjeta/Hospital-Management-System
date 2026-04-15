@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IVF-Managment-Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f6c39585005cf75d9f65c95cf954a5eb70f26473")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6a14fd211895c94940aa4fd1c1ea71aac897c482")]
 [assembly: System.Reflection.AssemblyProductAttribute("IVF-Managment-Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IVF-Managment-Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

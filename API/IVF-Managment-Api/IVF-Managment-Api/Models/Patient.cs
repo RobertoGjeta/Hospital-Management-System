@@ -1,60 +1,43 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using IVF_Managment_Api.Models.BaseModel;
+using IVF_Managment_Api.Models.HelperModels;
+using IvfClinic.Models;
+
 namespace IVF_Managment_Api.Models;
 
-public class Patient
+[Table("Patients")]
+public class Patient : User
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    [Required]
+    [MaxLength(20)]
+    public string PatientSystemId { get; set; } // Generated unique ID for the portal [cite: 1854]
 
-    public string FirstName { get; set; } = string.Empty;
+    [Required]
+    public DateTime DateOfBirth { get; set; } 
 
-    public string LastName { get; set; } = string.Empty;
+    [Required]
+    public Gender Gender { get; set; } 
 
-    public string Username { get; set; } = string.Empty;
+    [Required]
+    [MaxLength(50)]
+    public string NationalIdNumber { get; set; } // Must be unique 
 
-    public string Email { get; set; } = string.Empty;
+    public string Address { get; set; } 
 
-    public string PasswordHash { get; set; } = string.Empty;
+    // Billing & Insurance
+    public BillingType BillingType { get; set; } 
+    public string InsuranceProvider { get; set; } 
+    public string InsurancePolicyNumber { get; set; } 
 
-    public string NationalId { get; set; } = string.Empty;
+    // Medical Overview
+    public string MedicalHistoryNotes { get; set; } 
+    public string KnownAllergies { get; set; } 
 
-    public string Phone { get; set; } = string.Empty;
-
-    public Gender Gender { get; set; }
-
-    public DateTime DateOfBirth { get; set; }
-
-    public string? ProfileImageUrl { get; set; }
-
-    public string? MedicalHistory { get; set; }
-
-    public string? Allergies { get; set; }
-
-    public string? BloodType { get; set; }
-
-    public string? EmergencyContactName { get; set; }
-
-    public string? EmergencyContactPhone { get; set; }
-
-    public string? Address { get; set; }
-
-    public string? MaritalStatus { get; set; }
-
-    public DateTime? RegistrationDate { get; set; } = DateTime.UtcNow;
-
-    public bool IsActive { get; set; } = true;
-
-    public int FailedLoginAttempts { get; set; } = 0;
-
-    public DateTime? AccountLockedUntil { get; set; }
-
-    public DateTime? LastLoginAt { get; set; }
-
-    public DateTime PasswordChangedAt { get; set; } = DateTime.UtcNow;
-
-    public string? RefreshToken { get; set; }
-
-    public DateTime? RefreshTokenExpiryTime { get; set; }
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    // Navigation Properties
+    public Guid? AssignedDoctorId { get; set; }
+    public virtual Doctor AssignedDoctor { get; set; }
+        
+    public virtual ICollection<Appointment> Appointments { get; set; }
+    public virtual ICollection<Bill> Bills { get; set; }
 }

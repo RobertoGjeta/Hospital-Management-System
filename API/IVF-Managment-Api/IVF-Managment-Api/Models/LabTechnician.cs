@@ -1,54 +1,17 @@
-namespace IVF_Managment_Api.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using IVF_Managment_Api.Models.BaseModel;
+using IVF_Managment_Api.Models.HelperModels;
 
-public class LabTechnician
+[Table("LabTechnicians")]
+public class LabTechnician : User
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    [Required]
+    [MaxLength(50)]
+    public string TechnicianId { get; set; } // Used for timestamped audit trails [cite: 1535]
 
-    public string FirstName { get; set; } = string.Empty;
-
-    public string LastName { get; set; } = string.Empty;
-
-    public string Username { get; set; } = string.Empty;
-
-    public string Email { get; set; } = string.Empty;
-
-    public string PasswordHash { get; set; } = string.Empty;
-
-    public string NationalId { get; set; } = string.Empty;
-
-    public string Phone { get; set; } = string.Empty;
-
-    public Gender Gender { get; set; }
-
-    public DateTime DateOfBirth { get; set; }
-
-    public string? ProfileImageUrl { get; set; }
-
-    public string? EmployeeId { get; set; }
-
-    public DateTime? HireDate { get; set; }
-
-    public string? Specialization { get; set; } // e.g. Embryology, Andrology, Cryopreservation
-
-    public string? LicenseNumber { get; set; }
-
-    public string? Qualifications { get; set; }
-
-    public bool IsActive { get; set; } = true;
-
-    public int FailedLoginAttempts { get; set; } = 0;
-
-    public DateTime? AccountLockedUntil { get; set; }
-
-    public DateTime? LastLoginAt { get; set; }
-
-    public DateTime PasswordChangedAt { get; set; } = DateTime.UtcNow;
-
-    public string? RefreshToken { get; set; }
-
-    public DateTime? RefreshTokenExpiryTime { get; set; }
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    // Navigation Properties
+    public virtual ICollection<LabTestReport> UploadedTests { get; set; }
+    public virtual ICollection<EmbryoObservation> EmbryoObservations { get; set; }
+    public virtual ICollection<ChainOfCustodyLog> CustodyLogs { get; set; }
 }

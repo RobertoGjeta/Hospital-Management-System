@@ -1,4 +1,4 @@
-using IVF_Managment_Api.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<ILabTechnicianService, LabTechnicianService>();
 
 var app = builder.Build();
 

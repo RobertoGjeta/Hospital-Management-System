@@ -83,23 +83,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\User\\.nuget\\packages\\": {},
+    "C:\\Users\\armen\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\User\\OneDrive\\Desktop\\mySoftwareEngineeringProject\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
+      "projectUniqueName": "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
       "projectName": "IVF-Managment-Api",
-      "projectPath": "C:\\Users\\User\\OneDrive\\Desktop\\mySoftwareEngineeringProject\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
-      "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\User\\OneDrive\\Desktop\\mySoftwareEngineeringProject\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\obj\\",
+      "projectPath": "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
+      "packagesPath": "C:\\Users\\armen\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\armen\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -108,8 +108,8 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {},
+        "https://pkgs.dev.azure.com/bettertrucks-rehersal/_packaging/bettertrucks-rehersal/nuget/v3/index.json": {}
       },
       "frameworks": {
         "net10.0": {
@@ -127,7 +127,7 @@
         "auditLevel": "low",
         "auditMode": "all"
       },
-      "SdkAnalysisLevel": "10.0.200"
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net10.0": {
@@ -157,7 +157,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Users\\User\\.dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.AspNetCore": "(,10.0.32767]",
           "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

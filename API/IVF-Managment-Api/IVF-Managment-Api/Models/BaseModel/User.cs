@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using IvfClinic.Models;
 
 namespace IVF_Managment_Api.Models.BaseModel;
 
@@ -25,6 +26,9 @@ public class User
 
     [Required]
     public string PasswordHash { get; set; }
+    
+    [Required]
+    public UserRole Role { get; set; }
     
     [Phone]
     [MaxLength(20)]

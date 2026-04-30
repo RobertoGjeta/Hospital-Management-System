@@ -23,16 +23,16 @@ public class Patient : User
     [MaxLength(50)]
     public string NationalIdNumber { get; set; } // Must be unique 
 
-    public string Address { get; set; } 
+    public string? Address { get; set; }
 
     // Billing & Insurance
-    public BillingType BillingType { get; set; } 
-    public string InsuranceProvider { get; set; } 
-    public string InsurancePolicyNumber { get; set; } 
+    public BillingType BillingType { get; set; }
+    public string? InsuranceProvider { get; set; }
+    public string? InsurancePolicyNumber { get; set; }
 
     // Medical Overview
-    public string MedicalHistoryNotes { get; set; } 
-    public string KnownAllergies { get; set; } 
+    public string? MedicalHistoryNotes { get; set; }
+    public string? KnownAllergies { get; set; }
 
     // Navigation Properties
     public Guid? AssignedDoctorId { get; set; }

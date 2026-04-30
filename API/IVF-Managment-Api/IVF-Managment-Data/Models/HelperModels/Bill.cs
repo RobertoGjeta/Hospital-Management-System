@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using IVF_Managment_Api.Models;
 using IvfClinic.Models;
 
+namespace IVF_Managment_Api.Models.HelperModels;
+
 [Table("Bills")]
 public class Bill
 {

@@ -1,27 +1,30 @@
-using System.Collections.Concurrent;
+using IVF_Managment_Api.Data;
 using IVF_Managment_Api.Dtos;
 using IVF_Managment_Api.Models;
 using IvfClinic.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace IVF_Managment_Api.Services;
 
 public class AdministratorService : IAdministratorService
 {
-    private static readonly ConcurrentDictionary<Guid, Administrator> Store = new();
+    private readonly IvfDbContext _db;
 
-    public Task<IEnumerable<AdministratorResponseDto>> GetAllAsync()
+    public AdministratorService(IvfDbContext db) => _db = db;
+
+    public async Task<IEnumerable<AdministratorResponseDto>> GetAllAsync()
     {
-        var result = Store.Values.Select(MapToResponse);
-        return Task.FromResult(result);
+        var entities = await _db.Administrators.AsNoTracking().ToListAsync();
+        return entities.Select(MapToResponse);
     }
 
-    public Task<AdministratorResponseDto?> GetByIdAsync(Guid id)
+    public async Task<AdministratorResponseDto?> GetByIdAsync(Guid id)
     {
-        Store.TryGetValue(id, out var entity);
-        return Task.FromResult(entity is null ? null : MapToResponse(entity));
+        var entity = await _db.Administrators.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
+        return entity is null ? null : MapToResponse(entity);
     }
 
-    public Task<AdministratorResponseDto> CreateAsync(CreateAdministratorDto dto)
+    public async Task<AdministratorResponseDto> CreateAsync(CreateAdministratorDto dto)
     {
         var entity = new Administrator
         {
@@ -30,7 +33,7 @@ public class AdministratorService : IAdministratorService
             LastName = dto.LastName,
             Username = dto.Username,
             Email = dto.Email,
-            PasswordHash = BCryptHash(dto.Password),
+            PasswordHash = HashPassword(dto.Password),
             PhoneNumber = dto.PhoneNumber,
             Role = UserRole.Administrator,
             Department = dto.Department,
@@ -38,14 +41,15 @@ public class AdministratorService : IAdministratorService
             IsActive = true
         };
 
-        Store[entity.Id] = entity;
-        return Task.FromResult(MapToResponse(entity));
+        _db.Administrators.Add(entity);
+        await _db.SaveChangesAsync();
+        return MapToResponse(entity);
     }
 
-    public Task<AdministratorResponseDto?> UpdateAsync(Guid id, UpdateAdministratorDto dto)
+    public async Task<AdministratorResponseDto?> UpdateAsync(Guid id, UpdateAdministratorDto dto)
     {
-        if (!Store.TryGetValue(id, out var entity))
-            return Task.FromResult<AdministratorResponseDto?>(null);
+        var entity = await _db.Administrators.FindAsync(id);
+        if (entity is null) return null;
 
         if (dto.FirstName is not null) entity.FirstName = dto.FirstName;
         if (dto.LastName is not null) entity.LastName = dto.LastName;
@@ -53,12 +57,18 @@ public class AdministratorService : IAdministratorService
         if (dto.PhoneNumber is not null) entity.PhoneNumber = dto.PhoneNumber;
         if (dto.Department is not null) entity.Department = dto.Department;
 
-        return Task.FromResult<AdministratorResponseDto?>(MapToResponse(entity));
+        await _db.SaveChangesAsync();
+        return MapToResponse(entity);
     }
 
-    public Task<bool> DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(Guid id)
     {
-        return Task.FromResult(Store.TryRemove(id, out _));
+        var entity = await _db.Administrators.FindAsync(id);
+        if (entity is null) return false;
+
+        _db.Administrators.Remove(entity);
+        await _db.SaveChangesAsync();
+        return true;
     }
 
     private static AdministratorResponseDto MapToResponse(Administrator e) => new()
@@ -74,7 +84,7 @@ public class AdministratorService : IAdministratorService
         IsActive = e.IsActive
     };
 
-    private static string BCryptHash(string password) =>
+    private static string HashPassword(string password) =>
         Convert.ToBase64String(System.Security.Cryptography.SHA256.HashData(
             System.Text.Encoding.UTF8.GetBytes(password)));
 }

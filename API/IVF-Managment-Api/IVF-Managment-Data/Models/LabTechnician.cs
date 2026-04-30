@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using IVF_Managment_Api.Models.BaseModel;
 using IVF_Managment_Api.Models.HelperModels;
 
+namespace IVF_Managment_Api.Models;
+
 [Table("LabTechnicians")]
 public class LabTechnician : User
 {

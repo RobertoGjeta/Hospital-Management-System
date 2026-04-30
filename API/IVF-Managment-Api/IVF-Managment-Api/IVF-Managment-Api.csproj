@@ -10,17 +10,19 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\IVF-Managment-Data\IVF-Managment-Data.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Mappings\" />
       <Folder Include="Services\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Models\HelperModels\Appointment.cs">
-        <DependentUpon>AvailabilitySchedule.cs</DependentUpon>
-      </Compile>
     </ItemGroup>
 
 </Project>

@@ -32,7 +32,7 @@ public class User
     
     [Phone]
     [MaxLength(20)]
-    public string PhoneNumber { get; set; }
+    public string? PhoneNumber { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     

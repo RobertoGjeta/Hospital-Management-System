@@ -1,0 +1,107 @@
+.cryo-alert {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background-color: var(--color-alert-bg);
+  border-bottom: 1px solid var(--color-alert-border);
+  transition: background-color 0.2s;
+}
+
+.cryo-alert-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.cryo-alert-icon {
+  color: var(--color-orange);
+  flex-shrink: 0;
+}
+
+.cryo-alert-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cryo-alert-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-alert-text);
+}
+
+.cryo-tanks {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tank-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  box-shadow: var(--shadow);
+}
+
+.tank-chip svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+.tank-chip .tank-icon-ok {
+  color: #3b82f6;
+}
+
+.tank-chip .tank-icon-low {
+  color: var(--color-orange);
+}
+
+.tank-level {
+  font-weight: 600;
+}
+
+.tank-badge-low {
+  background-color: #fef3c7;
+  color: #92400e;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.dark .tank-badge-low {
+  background-color: #451a03;
+  color: #fcd34d;
+}
+
+.cryo-view-btn {
+  padding: 8px 16px;
+  background-color: var(--text-primary);
+  color: var(--bg-card);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.cryo-view-btn:hover {
+  opacity: 0.85;
+}

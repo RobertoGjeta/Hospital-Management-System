@@ -1,11 +1,13 @@
 using IVF_Managment_Api.Dtos;
 using IVF_Managment_Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IVF_Managment_Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Administrator")]
 public class LabTechnicianController : ControllerBase
 {
     private readonly ILabTechnicianService _service;

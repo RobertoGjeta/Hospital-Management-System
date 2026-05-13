@@ -71,7 +71,7 @@ public class IvfDbContext : DbContext
             .HasOne(p => p.AssignedDoctor)
             .WithMany(d => d.AssignedPatients)
             .HasForeignKey(p => p.AssignedDoctorId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.NoAction);
 
         // Appointment relationships
         modelBuilder.Entity<Appointment>()
@@ -138,7 +138,7 @@ public class IvfDbContext : DbContext
             .HasOne(o => o.FulfillingTechnician)
             .WithMany()
             .HasForeignKey(o => o.FulfillingTechnicianId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.NoAction);
 
         // LabTestReport ↔ Technician (UploadedTests)
         modelBuilder.Entity<LabTestReport>()

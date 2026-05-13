@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet nuget list *)",
+      "Bash(dotnet ef *)",
+      "Bash(dotnet build *)",
+      "Bash(dotnet clean *)",
+      "Bash(dotnet list *)",
+      "Bash(dotnet restore *)",
+      "PowerShell($dll = \\(Get-ChildItem -Recurse \"C:\\\\Users\\\\armen\\\\.nuget\\\\packages\\\\microsoft.openapi\\\\2.4.1\" -Filter \"Microsoft.OpenApi.dll\" | Select-Object -First 1\\).FullName; if \\($dll\\) { $asm = [System.Reflection.Assembly]::LoadFrom\\($dll\\); $asm.GetTypes\\(\\) | Select-Object -ExpandProperty Namespace | Sort-Object -Unique } else { \"DLL not found\" })",
+      "PowerShell(head *)"
+    ]
+  }
+}

@@ -40,6 +40,8 @@ public class DoctorService : IDoctorService
         };
 
         Store[entity.Id] = entity;
+        UserCredentialStore.Register(new UserCredentialStore.UserCredential(
+            entity.Id, entity.Username, entity.Email, entity.PasswordHash, entity.Role));
         return Task.FromResult(MapToResponse(entity));
     }
 
@@ -61,7 +63,12 @@ public class DoctorService : IDoctorService
 
     public Task<bool> DeleteAsync(Guid id)
     {
-        return Task.FromResult(Store.TryRemove(id, out _));
+        if (Store.TryRemove(id, out var removed))
+        {
+            UserCredentialStore.Remove(removed.Username, removed.Email);
+            return Task.FromResult(true);
+        }
+        return Task.FromResult(false);
     }
 
     private static DoctorResponseDto MapToResponse(Doctor e) => new()

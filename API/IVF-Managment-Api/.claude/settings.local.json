@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($assembly = [System.Reflection.Assembly]::LoadFrom\\(\"C:\\\\Users\\\\User\\\\.nuget\\\\packages\\\\microsoft.openapi\\\\2.4.1\\\\lib\\\\net8.0\\\\Microsoft.OpenApi.dll\"\\); $t = $assembly.GetType\\(\"Microsoft.OpenApi.OpenApiSecurityRequirement\"\\); $t.GetProperties\\(\\) | ForEach-Object { \"$\\($_.Name\\): $\\($_.PropertyType.Name\\)\" }; \"---Constructors---\"; $t.GetConstructors\\(\\) | ForEach-Object { $_.GetParameters\\(\\) | ForEach-Object { \"  $\\($_.Name\\): $\\($_.ParameterType.FullName\\)\" } })",
+      "PowerShell($assembly = [System.Reflection.Assembly]::LoadFrom\\(\"C:\\\\Users\\\\User\\\\.nuget\\\\packages\\\\microsoft.openapi\\\\2.4.1\\\\lib\\\\net8.0\\\\Microsoft.OpenApi.dll\"\\); $t = $assembly.GetType\\(\"Microsoft.OpenApi.OpenApiSecurityRequirement\"\\); \"BaseType: $\\($t.BaseType.FullName\\)\"; \"Interfaces:\"; $t.GetInterfaces\\(\\) | ForEach-Object { \"  $\\($_.FullName\\)\" } | Select-Object -First 5)"
+    ]
+  }
+}

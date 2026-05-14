@@ -1,6 +1,8 @@
 .app-shell {
   display: flex;
   min-height: 100vh;
+  background-color: var(--bg-main);
+  transition: background-color 0.2s;
 }
 
 .main-content {
@@ -8,5 +10,30 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  overflow-x: hidden;
+  margin-left: 88px;
+  min-width: 0;
+}
+
+.route-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.not-found {
+  padding: 64px 32px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.not-found h2 {
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-size: 22px;
+}
+
+.not-found p {
+  margin: 0;
+  font-size: 14px;
 }

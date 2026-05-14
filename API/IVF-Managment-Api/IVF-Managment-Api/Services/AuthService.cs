@@ -14,24 +14,44 @@ public class AuthService : IAuthService
 {
     private readonly IvfDbContext _db;
     private readonly IConfiguration _config;
+    private readonly IPasswordHasher _hasher;
+    private readonly IAuditLogger _audit;
 
-    public AuthService(IvfDbContext db, IConfiguration config)
+    public AuthService(IvfDbContext db, IConfiguration config, IPasswordHasher hasher, IAuditLogger audit)
     {
         _db = db;
         _config = config;
+        _hasher = hasher;
+        _audit = audit;
     }
 
     public async Task<TokenResponseDto?> LoginAsync(LoginDto dto)
     {
-        var passwordHash = HashPassword(dto.Password);
         var user = await _db.Users
-            .AsNoTracking()
             .FirstOrDefaultAsync(u =>
-                (u.Username == dto.UsernameOrEmail || u.Email == dto.UsernameOrEmail) &&
-                u.PasswordHash == passwordHash &&
-                u.IsActive);
+                u.Username == dto.UsernameOrEmail || u.Email == dto.UsernameOrEmail);
 
-        if (user is null) return null;
+        if (user is null || !user.IsActive) return null;
+
+        if (user.LockedUntil.HasValue && user.LockedUntil.Value > DateTime.UtcNow)
+            return null;
+
+        if (!_hasher.Verify(dto.Password, user.PasswordHash))
+        {
+            user.FailedLoginAttempts++;
+            if (user.FailedLoginAttempts >= 5)
+                user.LockedUntil = DateTime.UtcNow.AddMinutes(15);
+
+            await _db.SaveChangesAsync();
+            await _audit.LogAsync(user.Id, "LoginFailed", "User", user.Id);
+            return null;
+        }
+
+        user.FailedLoginAttempts = 0;
+        user.LockedUntil = null;
+        await _db.SaveChangesAsync();
+
+        await _audit.LogAsync(user.Id, "LoginSuccess", "User", user.Id);
 
         return new TokenResponseDto
         {
@@ -60,7 +80,7 @@ public class AuthService : IAuthService
             LastName = dto.LastName,
             Username = dto.Username,
             Email = dto.Email,
-            PasswordHash = HashPassword(dto.Password),
+            PasswordHash = _hasher.Hash(dto.Password),
             PhoneNumber = dto.PhoneNumber,
             Role = UserRole.Patient,
             PatientSystemId = $"PAT-{seq:D6}",
@@ -92,7 +112,7 @@ public class AuthService : IAuthService
         if (await _db.Users.AnyAsync(u => u.Username == dto.Username))
             return (null, "A user with this username already exists.");
 
-        var hash = HashPassword(dto.Password);
+        var hash = _hasher.Hash(dto.Password);
         var id = Guid.NewGuid();
         var now = DateTime.UtcNow;
 
@@ -242,7 +262,4 @@ public class AuthService : IAuthService
         IsActive = p.IsActive
     };
 
-    private static string HashPassword(string password) =>
-        Convert.ToBase64String(System.Security.Cryptography.SHA256.HashData(
-            System.Text.Encoding.UTF8.GetBytes(password)));
 }

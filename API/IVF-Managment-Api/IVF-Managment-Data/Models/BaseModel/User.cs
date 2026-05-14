@@ -37,5 +37,7 @@ public class User
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     public bool IsActive { get; set; } = true;
-    
+
+    public int FailedLoginAttempts { get; set; }
+    public DateTime? LockedUntil { get; set; }
 }

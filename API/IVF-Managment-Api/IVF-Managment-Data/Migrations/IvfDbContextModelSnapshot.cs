@@ -35,6 +35,9 @@ namespace IVF_Managment_Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("FailedLoginAttempts")
+                        .HasColumnType("int");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -47,6 +50,9 @@ namespace IVF_Managment_Api.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("LockedUntil")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -86,11 +92,20 @@ namespace IVF_Managment_Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("DoctorId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("DurationMinutes")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("EndsAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uniqueidentifier");
@@ -105,13 +120,23 @@ namespace IVF_Managment_Api.Migrations
                     b.Property<DateTime>("ScheduledAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("ServiceId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("ServiceType")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("StartsAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -122,6 +147,42 @@ namespace IVF_Managment_Api.Migrations
                     b.HasIndex("RoomId");
 
                     b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.AuditLogEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("AfterJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BeforeJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("EntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuditLogEntries");
                 });
 
             modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.AvailabilitySchedule", b =>
@@ -182,8 +243,9 @@ namespace IVF_Managment_Api.Migrations
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Subtotal")
                         .HasColumnType("decimal(18,2)");
@@ -206,6 +268,33 @@ namespace IVF_Managment_Api.Migrations
                     b.ToTable("Bills");
                 });
 
+            modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.BillLineItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("BillId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<Guid?>("ServiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BillId");
+
+                    b.ToTable("BillLineItems");
+                });
+
             modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.ChainOfCustodyLog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -224,8 +313,9 @@ namespace IVF_Managment_Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EventType")
-                        .HasColumnType("int");
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SampleIdentifier")
                         .IsRequired()
@@ -245,11 +335,101 @@ namespace IVF_Managment_Api.Migrations
                     b.ToTable("ChainOfCustodyLogs");
                 });
 
+            modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.ClinicService", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name", "Category")
+                        .IsUnique();
+
+                    b.ToTable("ClinicServices");
+                });
+
+            modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.DonationSample", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CollectionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DonorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAssignable")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ScreeningReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ScreeningStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StorageLocation")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DonationSamples");
+                });
+
             modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.Embryo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("DoctorInstructions")
                         .IsRequired()
@@ -262,8 +442,9 @@ namespace IVF_Managment_Api.Migrations
                     b.Property<Guid>("IvfCycleId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StorageCane")
                         .IsRequired()
@@ -284,6 +465,81 @@ namespace IVF_Managment_Api.Migrations
                     b.ToTable("Embryos");
                 });
 
+            modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.EmbryoClinicalInstruction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DoctorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EmbryoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Rationale")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmbryoId");
+
+                    b.ToTable("EmbryoClinicalInstructions");
+                });
+
+            modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.EmbryoCryopreservation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Cane")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EmbryoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("FreezingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("StrawPosition")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Tank")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("TechnicianId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("VitrificationMethod")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmbryoId");
+
+                    b.ToTable("EmbryoCryopreservations");
+                });
+
             modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.EmbryoObservation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -296,7 +552,7 @@ namespace IVF_Managment_Api.Migrations
                     b.Property<int>("DayOfDevelopment")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("EmbryoId")
+                    b.Property<Guid>("EmbryoId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("FragmentationPercentage")
@@ -340,8 +596,9 @@ namespace IVF_Managment_Api.Migrations
                     b.Property<Guid>("AssignedDoctorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CurrentPhase")
-                        .HasColumnType("int");
+                    b.Property<string>("CurrentPhase")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CycleProtocol")
                         .IsRequired()
@@ -352,6 +609,9 @@ namespace IVF_Managment_Api.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Outcome")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uniqueidentifier");
@@ -390,8 +650,9 @@ namespace IVF_Managment_Api.Migrations
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReferenceRanges")
                         .IsRequired()
@@ -414,8 +675,9 @@ namespace IVF_Managment_Api.Migrations
                     b.Property<DateTime?>("ReviewedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TestCategory")
                         .IsRequired()
@@ -447,12 +709,21 @@ namespace IVF_Managment_Api.Migrations
                     b.Property<bool>("IsCritical")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsReleasedToPatient")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ReferenceRanges")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ReleasedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ResultFileUrl")
                         .IsRequired()
@@ -471,6 +742,8 @@ namespace IVF_Managment_Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OrderId");
+
                     b.HasIndex("PatientId");
 
                     b.HasIndex("TechnicianId");
@@ -482,6 +755,9 @@ namespace IVF_Managment_Api.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AmendsEntryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AttachedFileUrl")
@@ -498,19 +774,59 @@ namespace IVF_Managment_Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EntryType")
-                        .HasColumnType("int");
+                    b.Property<string>("EntryType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AmendsEntryId");
+
                     b.HasIndex("AuthoringDoctorId");
 
                     b.HasIndex("PatientId");
 
                     b.ToTable("MedicalRecordEntries");
+                });
+
+            modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Channel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.Payment", b =>
@@ -528,8 +844,9 @@ namespace IVF_Managment_Api.Migrations
                     b.Property<Guid>("BillId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Method")
-                        .HasColumnType("int");
+                    b.Property<string>("Method")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
@@ -555,6 +872,12 @@ namespace IVF_Managment_Api.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsMaintenance")
                         .HasColumnType("bit");
@@ -725,6 +1048,17 @@ namespace IVF_Managment_Api.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.BillLineItem", b =>
+                {
+                    b.HasOne("IVF_Managment_Api.Models.HelperModels.Bill", "Bill")
+                        .WithMany("LineItems")
+                        .HasForeignKey("BillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bill");
+                });
+
             modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.ChainOfCustodyLog", b =>
                 {
                     b.HasOne("IVF_Managment_Api.Models.LabTechnician", "Technician")
@@ -747,17 +1081,43 @@ namespace IVF_Managment_Api.Migrations
                     b.Navigation("IvfCycle");
                 });
 
+            modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.EmbryoClinicalInstruction", b =>
+                {
+                    b.HasOne("IVF_Managment_Api.Models.HelperModels.Embryo", "Embryo")
+                        .WithMany()
+                        .HasForeignKey("EmbryoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Embryo");
+                });
+
+            modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.EmbryoCryopreservation", b =>
+                {
+                    b.HasOne("IVF_Managment_Api.Models.HelperModels.Embryo", "Embryo")
+                        .WithMany()
+                        .HasForeignKey("EmbryoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Embryo");
+                });
+
             modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.EmbryoObservation", b =>
                 {
-                    b.HasOne("IVF_Managment_Api.Models.HelperModels.Embryo", null)
+                    b.HasOne("IVF_Managment_Api.Models.HelperModels.Embryo", "Embryo")
                         .WithMany("Observations")
-                        .HasForeignKey("EmbryoId");
+                        .HasForeignKey("EmbryoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("IVF_Managment_Api.Models.LabTechnician", "Technician")
                         .WithMany("EmbryoObservations")
                         .HasForeignKey("TechnicianId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Embryo");
 
                     b.Navigation("Technician");
                 });
@@ -809,6 +1169,11 @@ namespace IVF_Managment_Api.Migrations
 
             modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.LabTestReport", b =>
                 {
+                    b.HasOne("IVF_Managment_Api.Models.HelperModels.LabTestOrder", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("IVF_Managment_Api.Models.Patient", "Patient")
                         .WithMany()
                         .HasForeignKey("PatientId")
@@ -821,6 +1186,8 @@ namespace IVF_Managment_Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Order");
+
                     b.Navigation("Patient");
 
                     b.Navigation("Technician");
@@ -828,6 +1195,11 @@ namespace IVF_Managment_Api.Migrations
 
             modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.MedicalRecordEntry", b =>
                 {
+                    b.HasOne("IVF_Managment_Api.Models.HelperModels.MedicalRecordEntry", "AmendsEntry")
+                        .WithMany()
+                        .HasForeignKey("AmendsEntryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("IVF_Managment_Api.Models.Doctor", "AuthoringDoctor")
                         .WithMany()
                         .HasForeignKey("AuthoringDoctorId")
@@ -839,6 +1211,8 @@ namespace IVF_Managment_Api.Migrations
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("AmendsEntry");
 
                     b.Navigation("AuthoringDoctor");
 
@@ -905,6 +1279,8 @@ namespace IVF_Managment_Api.Migrations
 
             modelBuilder.Entity("IVF_Managment_Api.Models.HelperModels.Bill", b =>
                 {
+                    b.Navigation("LineItems");
+
                     b.Navigation("Payments");
                 });
 

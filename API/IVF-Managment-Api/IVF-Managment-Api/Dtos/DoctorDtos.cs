@@ -77,3 +77,22 @@ public class DoctorResponseDto
     public DateTime CreatedAt { get; set; }
     public bool IsActive { get; set; }
 }
+
+public class AvailabilitySlotDto
+{
+    [Required]
+    public DayOfWeek DayOfWeek { get; set; }
+
+    [Required]
+    public TimeSpan StartTime { get; set; }
+
+    [Required]
+    public TimeSpan EndTime { get; set; }
+}
+
+public class DoctorAvailabilityResponseDto
+{
+    public DateOnly Date { get; set; }
+    public TimeSpan StartTime { get; set; }
+    public TimeSpan EndTime { get; set; }
+}

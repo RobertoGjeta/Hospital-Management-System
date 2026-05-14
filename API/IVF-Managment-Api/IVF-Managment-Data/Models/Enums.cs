@@ -28,10 +28,12 @@ namespace IvfClinic.Models
 
     public enum AppointmentStatus
     {
-        Confirmed, 
+        Confirmed,
         Completed,
         Cancelled,
-        Rescheduled
+        Rescheduled,
+        Scheduled,
+        NoShow
     }
 
     public enum TestPriority
@@ -43,11 +45,10 @@ namespace IvfClinic.Models
 
     public enum TestStatus
     {
-        Pending, 
+        Pending,
         InProgress,
-        UnderReview,
-        Available
-        
+        Completed,
+        Cancelled
     }
 
     public enum RecordEntryType
@@ -55,7 +56,8 @@ namespace IvfClinic.Models
         ClinicalNote,
         Diagnosis,
         Prescription,
-        TreatmentPlan
+        TreatmentPlan,
+        TreatmentPlanUpdate
     }
 
     public enum CyclePhase
@@ -65,8 +67,18 @@ namespace IvfClinic.Models
         Fertilization,
         EmbryoCulture,
         Transfer,
-        LutealPhase
-        
+        LutealPhase,
+        Completed,
+        Cancelled
+    }
+
+    public enum EmbryoInstructionType
+    {
+        Transfer,
+        FET,
+        Cryopreserve,
+        Discard,
+        Await
     }
 
     public enum EmbryoStatus
@@ -103,5 +115,35 @@ namespace IvfClinic.Models
         Stored,
         Transferred,
         Discarded
+    }
+
+    public enum NotificationType
+    {
+        General,
+        UrgentLabResult,
+        AppointmentScheduled,
+        AppointmentCancelled,
+        AppointmentRescheduled
+    }
+
+    public enum NotificationChannel
+    {
+        InApp,
+        Email,
+        SMS
+    }
+
+    public enum DonationSampleType
+    {
+        Sperm,
+        Egg,
+        Embryo
+    }
+
+    public enum ScreeningStatus
+    {
+        Pending,
+        Cleared,
+        Rejected
     }
 }

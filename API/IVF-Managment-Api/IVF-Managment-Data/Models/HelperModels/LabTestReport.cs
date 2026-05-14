@@ -28,7 +28,13 @@ using System.ComponentModel.DataAnnotations.Schema;
         public bool IsCritical { get; set; } 
 
         [MaxLength(500)]
-        public string ResultFileUrl { get; set; } 
+        public string ResultFileUrl { get; set; }
+
+        public Guid? OrderId { get; set; }
+        public virtual LabTestOrder? Order { get; set; }
+
+        public bool IsReleasedToPatient { get; set; }
+        public DateTime? ReleasedAt { get; set; }
 
         public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
     }

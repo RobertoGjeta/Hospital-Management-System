@@ -1,5 +1,6 @@
 using IVF_Managment_Api.Data;
 using IVF_Managment_Api.Dtos;
+using IVF_Managment_Api.Exceptions;
 using IVF_Managment_Api.Models;
 using IvfClinic.Models;
 using Microsoft.EntityFrameworkCore;
@@ -9,8 +10,13 @@ namespace IVF_Managment_Api.Services;
 public class PatientService : IPatientService
 {
     private readonly IvfDbContext _db;
+    private readonly IPasswordHasher _hasher;
 
-    public PatientService(IvfDbContext db) => _db = db;
+    public PatientService(IvfDbContext db, IPasswordHasher hasher)
+    {
+        _db = db;
+        _hasher = hasher;
+    }
 
     public async Task<IEnumerable<PatientResponseDto>> GetAllAsync()
     {
@@ -26,8 +32,13 @@ public class PatientService : IPatientService
 
     public async Task<PatientResponseDto> CreateAsync(CreatePatientDto dto)
     {
-        // Sequential, human-readable patient code. Unique index on PatientSystemId
-        // guards against the rare collision under concurrent creates.
+        if (!dto.OverrideDuplicateCheck)
+        {
+            var duplicates = await DetectDuplicatesAsync(dto.NationalIdNumber, dto.FirstName, dto.LastName, dto.DateOfBirth);
+            if (duplicates.Count > 0)
+                throw new DuplicatePatientException(duplicates);
+        }
+
         var seq = await _db.Patients.CountAsync() + 1;
 
         var entity = new Patient
@@ -37,7 +48,7 @@ public class PatientService : IPatientService
             LastName = dto.LastName,
             Username = dto.Username,
             Email = dto.Email,
-            PasswordHash = HashPassword(dto.Password),
+            PasswordHash = _hasher.Hash(dto.Password),
             PhoneNumber = dto.PhoneNumber,
             Role = UserRole.Patient,
             PatientSystemId = $"PAT-{seq:D6}",
@@ -91,6 +102,58 @@ public class PatientService : IPatientService
         return true;
     }
 
+    public async Task<IEnumerable<PatientResponseDto>> SearchAsync(PatientSearchFilter filter)
+    {
+        var query = _db.Patients.AsNoTracking().AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(filter.Name) && filter.Name.Length >= 2)
+            query = query.Where(p => p.FirstName.Contains(filter.Name) || p.LastName.Contains(filter.Name));
+
+        if (!string.IsNullOrWhiteSpace(filter.PatientSystemId))
+            query = query.Where(p => p.PatientSystemId == filter.PatientSystemId);
+
+        if (filter.AssignedDoctorId.HasValue)
+            query = query.Where(p => p.AssignedDoctorId == filter.AssignedDoctorId.Value);
+
+        var entities = await query.ToListAsync();
+        return entities.Select(MapToResponse);
+    }
+
+    public async Task<IReadOnlyList<Guid>> DetectDuplicatesAsync(string nationalId, string firstName, string lastName, DateTime dob)
+    {
+        var matches = await _db.Patients
+            .AsNoTracking()
+            .Where(p => p.NationalIdNumber == nationalId ||
+                        (p.FirstName == firstName && p.LastName == lastName && p.DateOfBirth == dob))
+            .Select(p => p.Id)
+            .ToListAsync();
+
+        return matches.AsReadOnly();
+    }
+
+    public async Task<IEnumerable<PatientResponseDto>> GetAssignedToDoctorAsync(Guid doctorId)
+    {
+        var entities = await _db.Patients
+            .AsNoTracking()
+            .Where(p => p.AssignedDoctorId == doctorId)
+            .ToListAsync();
+
+        return entities.Select(MapToResponse);
+    }
+
+    public async Task<PatientResponseDto?> UpdateContactInfoAsync(Guid patientId, UpdateContactDto dto)
+    {
+        var entity = await _db.Patients.FindAsync(patientId);
+        if (entity is null) return null;
+
+        if (dto.Email is not null) entity.Email = dto.Email;
+        if (dto.PhoneNumber is not null) entity.PhoneNumber = dto.PhoneNumber;
+        if (dto.Address is not null) entity.Address = dto.Address;
+
+        await _db.SaveChangesAsync();
+        return MapToResponse(entity);
+    }
+
     private static PatientResponseDto MapToResponse(Patient e) => new()
     {
         Id = e.Id,
@@ -114,7 +177,4 @@ public class PatientService : IPatientService
         IsActive = e.IsActive
     };
 
-    private static string HashPassword(string password) =>
-        Convert.ToBase64String(System.Security.Cryptography.SHA256.HashData(
-            System.Text.Encoding.UTF8.GetBytes(password)));
 }

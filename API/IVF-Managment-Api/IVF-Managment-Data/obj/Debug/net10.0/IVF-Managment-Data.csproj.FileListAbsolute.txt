@@ -11,3 +11,16 @@ C:\Users\armen\Desktop\School\Soft Engineering\Hospital-Management-System\API\IV
 C:\Users\armen\Desktop\School\Soft Engineering\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\refint\IVF-Managment-Data.dll
 C:\Users\armen\Desktop\School\Soft Engineering\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\IVF-Managment-Data.pdb
 C:\Users\armen\Desktop\School\Soft Engineering\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\ref\IVF-Managment-Data.dll
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\bin\Debug\net10.0\IVF-Managment-Data.deps.json
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\bin\Debug\net10.0\IVF-Managment-Data.dll
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\bin\Debug\net10.0\IVF-Managment-Data.pdb
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\IVF-Managment-Data.csproj.AssemblyReference.cache
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\IVF-Managment-Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\IVF-Managment-Data.AssemblyInfoInputs.cache
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\IVF-Managment-Data.AssemblyInfo.cs
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\IVF-Managment-Data.csproj.CoreCompileInputs.cache
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\IVF-Managment-Data.sourcelink.json
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\IVF-Managment-Data.dll
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\refint\IVF-Managment-Data.dll
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\IVF-Managment-Data.pdb
+C:\Users\User\OneDrive\Desktop\mySoftwareEngineeringProject\Hospital-Management-System\API\IVF-Managment-Api\IVF-Managment-Data\obj\Debug\net10.0\ref\IVF-Managment-Data.dll

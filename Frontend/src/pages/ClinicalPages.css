@@ -1,0 +1,126 @@
+.clinical-page {
+  padding: 0 0 2rem;
+}
+
+.clinical-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.clinical-toolbar h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.search-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.search-row input,
+.inline-form input,
+.inline-form select,
+.inline-form textarea {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.card-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.card-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  text-align: left;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.detail-panel {
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  padding: 1rem;
+  background: var(--surface, #fff);
+}
+
+.detail-panel h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+}
+
+.list-row {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  font-size: 0.875rem;
+}
+
+.list-row:last-child {
+  border-bottom: none;
+}
+
+.inline-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.muted {
+  color: var(--text-muted, #64748b);
+  font-size: 0.875rem;
+}
+
+.cycle-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.phase-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.phase-chip {
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  border: 1px solid var(--border, #e2e8f0);
+}
+
+.phase-chip.active {
+  background: var(--accent, #0d9488);
+  color: #fff;
+  border-color: transparent;
+}
+
+.demo-banner {
+  font-size: 0.8rem;
+  color: var(--text-muted, #64748b);
+  padding: 0.5rem 0.75rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px dashed var(--border, #cbd5e1);
+}

@@ -9,8 +9,13 @@ namespace IVF_Managment_Api.Services;
 public class LabTechnicianService : ILabTechnicianService
 {
     private readonly IvfDbContext _db;
+    private readonly IPasswordHasher _hasher;
 
-    public LabTechnicianService(IvfDbContext db) => _db = db;
+    public LabTechnicianService(IvfDbContext db, IPasswordHasher hasher)
+    {
+        _db = db;
+        _hasher = hasher;
+    }
 
     public async Task<IEnumerable<LabTechnicianResponseDto>> GetAllAsync()
     {
@@ -33,7 +38,7 @@ public class LabTechnicianService : ILabTechnicianService
             LastName = dto.LastName,
             Username = dto.Username,
             Email = dto.Email,
-            PasswordHash = HashPassword(dto.Password),
+            PasswordHash = _hasher.Hash(dto.Password),
             PhoneNumber = dto.PhoneNumber,
             Role = UserRole.LabTechnician,
             TechnicianId = dto.TechnicianId,
@@ -84,7 +89,4 @@ public class LabTechnicianService : ILabTechnicianService
         IsActive = e.IsActive
     };
 
-    private static string HashPassword(string password) =>
-        Convert.ToBase64String(System.Security.Cryptography.SHA256.HashData(
-            System.Text.Encoding.UTF8.GetBytes(password)));
 }

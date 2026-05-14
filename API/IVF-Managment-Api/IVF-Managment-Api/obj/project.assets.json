@@ -39,6 +39,15 @@
           }
         }
       },
+      "BCrypt.Net-Next/4.2.0": {
+        "type": "package",
+        "compile": {
+          "lib/net10.0/BCrypt-Net-Next.dll": {}
+        },
+        "runtime": {
+          "lib/net10.0/BCrypt-Net-Next.dll": {}
+        }
+      },
       "Humanizer.Core/2.14.1": {
         "type": "package",
         "compile": {
@@ -1230,6 +1239,31 @@
         "azureicon.png",
         "lib/netstandard2.0/Azure.Identity.dll",
         "lib/netstandard2.0/Azure.Identity.xml"
+      ]
+    },
+    "BCrypt.Net-Next/4.2.0": {
+      "sha512": "gwLD2KfCuwQesP17aVh4h6lpiMPEVt5Lbpndo0ej903hNUUTtyxt3ARdDjmuydBRTAUICc7OVKVbaOvc6SQYXA==",
+      "type": "package",
+      "path": "bcrypt.net-next/4.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "bcrypt.net-next.4.2.0.nupkg.sha512",
+        "bcrypt.net-next.nuspec",
+        "ico.png",
+        "lib/net10.0/BCrypt-Net-Next.dll",
+        "lib/net10.0/BCrypt.Net-Next.xml",
+        "lib/net462/BCrypt-Net-Next.dll",
+        "lib/net462/BCrypt.Net-Next.xml",
+        "lib/net472/BCrypt-Net-Next.dll",
+        "lib/net472/BCrypt.Net-Next.xml",
+        "lib/net48/BCrypt-Net-Next.dll",
+        "lib/net48/BCrypt.Net-Next.xml",
+        "lib/netstandard2.0/BCrypt-Net-Next.dll",
+        "lib/netstandard2.0/BCrypt.Net-Next.xml",
+        "lib/netstandard2.1/BCrypt-Net-Next.dll",
+        "lib/netstandard2.1/BCrypt.Net-Next.xml",
+        "readme.md"
       ]
     },
     "Humanizer.Core/2.14.1": {
@@ -3491,6 +3525,7 @@
   },
   "projectFileDependencyGroups": {
     "net10.0": [
+      "BCrypt.Net-Next >= 4.2.0",
       "IVF-Managment-Data >= 1.0.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 10.0.2",
       "Microsoft.AspNetCore.OpenApi >= 10.0.2",
@@ -3500,23 +3535,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\armen\\.nuget\\packages\\": {},
+    "C:\\Users\\User\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
+      "projectUniqueName": "C:\\Users\\User\\OneDrive\\Desktop\\mySoftwareEngineeringProject\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
       "projectName": "IVF-Managment-Api",
-      "projectPath": "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
-      "packagesPath": "C:\\Users\\armen\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\obj\\",
+      "projectPath": "C:\\Users\\User\\OneDrive\\Desktop\\mySoftwareEngineeringProject\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\IVF-Managment-Api.csproj",
+      "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\User\\OneDrive\\Desktop\\mySoftwareEngineeringProject\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\armen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -3532,8 +3567,8 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Data\\IVF-Managment-Data.csproj": {
-              "projectPath": "C:\\Users\\armen\\Desktop\\School\\Soft Engineering\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Data\\IVF-Managment-Data.csproj"
+            "C:\\Users\\User\\OneDrive\\Desktop\\mySoftwareEngineeringProject\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Data\\IVF-Managment-Data.csproj": {
+              "projectPath": "C:\\Users\\User\\OneDrive\\Desktop\\mySoftwareEngineeringProject\\Hospital-Management-System\\API\\IVF-Managment-Api\\IVF-Managment-Data\\IVF-Managment-Data.csproj"
             }
           }
         }
@@ -3548,12 +3583,16 @@
         "auditLevel": "low",
         "auditMode": "all"
       },
-      "SdkAnalysisLevel": "10.0.100"
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net10.0": {
         "targetAlias": "net10.0",
         "dependencies": {
+          "BCrypt.Net-Next": {
+            "target": "Package",
+            "version": "[4.2.0, )"
+          },
           "Microsoft.AspNetCore.Authentication.JwtBearer": {
             "target": "Package",
             "version": "[10.0.2, )"
@@ -3596,7 +3635,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Users\\User\\.dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.AspNetCore": "(,10.0.32767]",
           "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
@@ -4013,13 +4052,5 @@
         }
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1900",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://pkgs.dev.azure.com/bettertrucks-rehersal/_packaging/bettertrucks-rehersal/nuget/v3/index.json."
-    }
-  ]
+  }
 }

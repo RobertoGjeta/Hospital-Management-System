@@ -32,6 +32,13 @@ public class IvfDbContext : DbContext
     public DbSet<LabTestReport> LabTestReports => Set<LabTestReport>();
     public DbSet<MedicalRecordEntry> MedicalRecordEntries => Set<MedicalRecordEntry>();
     public DbSet<ChainOfCustodyLog> ChainOfCustodyLogs => Set<ChainOfCustodyLog>();
+    public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<AuditLogEntry> AuditLogEntries => Set<AuditLogEntry>();
+    public DbSet<EmbryoCryopreservation> EmbryoCryopreservations => Set<EmbryoCryopreservation>();
+    public DbSet<EmbryoClinicalInstruction> EmbryoClinicalInstructions => Set<EmbryoClinicalInstruction>();
+    public DbSet<ClinicService> ClinicServices => Set<ClinicService>();
+    public DbSet<BillLineItem> BillLineItems => Set<BillLineItem>();
+    public DbSet<DonationSample> DonationSamples => Set<DonationSample>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -111,17 +118,38 @@ public class IvfDbContext : DbContext
             .HasForeignKey(c => c.AssignedDoctorId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Embryo ↔ IvfCycle ↔ EmbryoObservation
+        // Embryo ↔ IvfCycle
         modelBuilder.Entity<Embryo>()
             .HasOne(e => e.IvfCycle)
             .WithMany(c => c.Embryos)
             .HasForeignKey(e => e.IvfCycleId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // EmbryoObservation ↔ Embryo + Technician
+        modelBuilder.Entity<EmbryoObservation>()
+            .HasOne(o => o.Embryo)
+            .WithMany(e => e.Observations)
+            .HasForeignKey(o => o.EmbryoId)
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<EmbryoObservation>()
             .HasOne(o => o.Technician)
             .WithMany(t => t.EmbryoObservations)
             .HasForeignKey(o => o.TechnicianId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // EmbryoCryopreservation ↔ Embryo
+        modelBuilder.Entity<EmbryoCryopreservation>()
+            .HasOne(c => c.Embryo)
+            .WithMany()
+            .HasForeignKey(c => c.EmbryoId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // EmbryoClinicalInstruction ↔ Embryo
+        modelBuilder.Entity<EmbryoClinicalInstruction>()
+            .HasOne(i => i.Embryo)
+            .WithMany()
+            .HasForeignKey(i => i.EmbryoId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // LabTestOrder relationships (Patient + Requesting Doctor + optional Fulfilling Tech)
         modelBuilder.Entity<LabTestOrder>()
@@ -184,5 +212,67 @@ public class IvfDbContext : DbContext
             .WithMany()
             .HasForeignKey(a => a.RoomId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        // MedicalRecordEntry self-FK (amendment chain)
+        modelBuilder.Entity<MedicalRecordEntry>()
+            .HasOne(m => m.AmendsEntry)
+            .WithMany()
+            .HasForeignKey(m => m.AmendsEntryId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // LabTestReport ↔ LabTestOrder
+        modelBuilder.Entity<LabTestReport>()
+            .HasOne(r => r.Order)
+            .WithMany()
+            .HasForeignKey(r => r.OrderId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Enum → string conversions
+        modelBuilder.Entity<Appointment>()
+            .Property(a => a.Status).HasConversion<string>();
+        modelBuilder.Entity<Notification>()
+            .Property(n => n.Type).HasConversion<string>();
+        modelBuilder.Entity<Notification>()
+            .Property(n => n.Channel).HasConversion<string>();
+        modelBuilder.Entity<LabTestOrder>()
+            .Property(o => o.Priority).HasConversion<string>();
+        modelBuilder.Entity<LabTestOrder>()
+            .Property(o => o.Status).HasConversion<string>();
+        modelBuilder.Entity<MedicalRecordEntry>()
+            .Property(m => m.EntryType).HasConversion<string>();
+        modelBuilder.Entity<IvfCycle>()
+            .Property(c => c.CurrentPhase).HasConversion<string>();
+        modelBuilder.Entity<Embryo>()
+            .Property(e => e.Status).HasConversion<string>();
+        modelBuilder.Entity<EmbryoClinicalInstruction>()
+            .Property(i => i.Type).HasConversion<string>();
+
+        // BillLineItem ↔ Bill
+        modelBuilder.Entity<BillLineItem>()
+            .HasOne(li => li.Bill)
+            .WithMany(b => b.LineItems)
+            .HasForeignKey(li => li.BillId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // ClinicService unique name within category
+        modelBuilder.Entity<ClinicService>()
+            .HasIndex(s => new { s.Name, s.Category })
+            .IsUnique();
+
+        // DonationSample enum conversions
+        modelBuilder.Entity<DonationSample>()
+            .Property(d => d.Type).HasConversion<string>();
+        modelBuilder.Entity<DonationSample>()
+            .Property(d => d.ScreeningStatus).HasConversion<string>();
+
+        // ChainOfCustodyLog enum conversion
+        modelBuilder.Entity<ChainOfCustodyLog>()
+            .Property(l => l.EventType).HasConversion<string>();
+
+        // Payment enum conversion
+        modelBuilder.Entity<Payment>()
+            .Property(p => p.Method).HasConversion<string>();
+        modelBuilder.Entity<Bill>()
+            .Property(b => b.Status).HasConversion<string>();
     }
 }

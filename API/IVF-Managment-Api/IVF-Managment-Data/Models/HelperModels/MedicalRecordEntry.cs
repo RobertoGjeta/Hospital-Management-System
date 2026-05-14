@@ -25,7 +25,10 @@ public class MedicalRecordEntry
     [Required]
     public string Content { get; set; } // Free text or JSON containing diagnosis/prescription
 
-    public string AttachedFileUrl { get; set; } // e.g., scan images up to 20MB 
+    public string AttachedFileUrl { get; set; }
+
+    public Guid? AmendsEntryId { get; set; }
+    public virtual MedicalRecordEntry? AmendsEntry { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -1,6 +1,8 @@
 using IVF_Managment_Api.Data;
 using IVF_Managment_Api.Dtos;
+using IVF_Managment_Api.Exceptions;
 using IVF_Managment_Api.Models;
+using IVF_Managment_Api.Models.HelperModels;
 using IvfClinic.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,8 +11,15 @@ namespace IVF_Managment_Api.Services;
 public class DoctorService : IDoctorService
 {
     private readonly IvfDbContext _db;
+    private readonly IPasswordHasher _hasher;
+    private readonly IAppointmentService _appointments;
 
-    public DoctorService(IvfDbContext db) => _db = db;
+    public DoctorService(IvfDbContext db, IPasswordHasher hasher, IAppointmentService appointments)
+    {
+        _db = db;
+        _hasher = hasher;
+        _appointments = appointments;
+    }
 
     public async Task<IEnumerable<DoctorResponseDto>> GetAllAsync()
     {
@@ -33,7 +42,7 @@ public class DoctorService : IDoctorService
             LastName = dto.LastName,
             Username = dto.Username,
             Email = dto.Email,
-            PasswordHash = HashPassword(dto.Password),
+            PasswordHash = _hasher.Hash(dto.Password),
             PhoneNumber = dto.PhoneNumber,
             Role = UserRole.Doctor,
             Specialization = dto.Specialization,
@@ -75,6 +84,90 @@ public class DoctorService : IDoctorService
         return true;
     }
 
+    public async Task<IEnumerable<DoctorResponseDto>> GetActiveAsync()
+    {
+        var entities = await _db.Doctors.AsNoTracking().Where(d => d.IsActive).ToListAsync();
+        return entities.Select(MapToResponse);
+    }
+
+    public async Task DeactivateAsync(Guid id)
+    {
+        var entity = await _db.Doctors.FindAsync(id);
+        if (entity is null)
+            throw new InvalidOperationException("Doctor not found.");
+
+        var futureAppointments = await _appointments.GetByDoctorAsync(id, DateTime.UtcNow, DateTime.UtcNow.AddYears(5));
+        if (futureAppointments.Any(a => a.Status != AppointmentStatus.Cancelled))
+            throw new HasFutureAppointmentsException();
+
+        entity.IsActive = false;
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<DoctorAvailabilityResponseDto>> GetAvailabilityAsync(Guid doctorId, DateOnly from, DateOnly to)
+    {
+        var schedules = await _db.AvailabilitySchedules
+            .AsNoTracking()
+            .Where(s => s.DoctorId == doctorId)
+            .ToListAsync();
+
+        var appointments = await _db.Appointments
+            .AsNoTracking()
+            .Where(a => a.DoctorId == doctorId &&
+                        a.StartsAt >= from.ToDateTime(TimeOnly.MinValue) &&
+                        a.StartsAt <= to.ToDateTime(TimeOnly.MaxValue) &&
+                        a.Status != AppointmentStatus.Cancelled)
+            .ToListAsync();
+
+        var result = new List<DoctorAvailabilityResponseDto>();
+
+        for (var date = from; date <= to; date = date.AddDays(1))
+        {
+            var daySchedules = schedules.Where(s => s.DayOfWeek == date.DayOfWeek);
+            foreach (var schedule in daySchedules)
+            {
+                var slotStart = date.ToDateTime(TimeOnly.FromTimeSpan(schedule.StartTime));
+                var slotEnd = date.ToDateTime(TimeOnly.FromTimeSpan(schedule.EndTime));
+
+                var hasConflict = appointments.Any(a => a.StartsAt < slotEnd && a.EndsAt > slotStart);
+                if (!hasConflict)
+                {
+                    result.Add(new DoctorAvailabilityResponseDto
+                    {
+                        Date = date,
+                        StartTime = schedule.StartTime,
+                        EndTime = schedule.EndTime
+                    });
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public async Task SetAvailabilityAsync(Guid doctorId, List<AvailabilitySlotDto> slots)
+    {
+        var existing = await _db.AvailabilitySchedules
+            .Where(s => s.DoctorId == doctorId)
+            .ToListAsync();
+
+        _db.AvailabilitySchedules.RemoveRange(existing);
+
+        foreach (var slot in slots)
+        {
+            _db.AvailabilitySchedules.Add(new AvailabilitySchedule
+            {
+                Id = Guid.NewGuid(),
+                DoctorId = doctorId,
+                DayOfWeek = slot.DayOfWeek,
+                StartTime = slot.StartTime,
+                EndTime = slot.EndTime
+            });
+        }
+
+        await _db.SaveChangesAsync();
+    }
+
     private static DoctorResponseDto MapToResponse(Doctor e) => new()
     {
         Id = e.Id,
@@ -89,8 +182,4 @@ public class DoctorService : IDoctorService
         CreatedAt = e.CreatedAt,
         IsActive = e.IsActive
     };
-
-    private static string HashPassword(string password) =>
-        Convert.ToBase64String(System.Security.Cryptography.SHA256.HashData(
-            System.Text.Encoding.UTF8.GetBytes(password)));
 }

@@ -52,6 +52,8 @@ public class CreatePatientDto
     public string? KnownAllergies { get; set; }
 
     public Guid? AssignedDoctorId { get; set; }
+
+    public bool OverrideDuplicateCheck { get; set; }
 }
 
 public class UpdatePatientDto
@@ -105,4 +107,26 @@ public class PatientResponseDto
     public Guid? AssignedDoctorId { get; set; }
     public DateTime CreatedAt { get; set; }
     public bool IsActive { get; set; }
+}
+
+public class PatientSearchFilter
+{
+    [MinLength(2)]
+    public string? Name { get; set; }
+
+    public string? PatientSystemId { get; set; }
+
+    public Guid? AssignedDoctorId { get; set; }
+}
+
+public class UpdateContactDto
+{
+    [EmailAddress]
+    public string? Email { get; set; }
+
+    [Phone]
+    [MaxLength(20)]
+    public string? PhoneNumber { get; set; }
+
+    public string? Address { get; set; }
 }

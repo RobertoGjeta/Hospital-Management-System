@@ -42,6 +42,7 @@ public class Bill
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public virtual ICollection<Payment> Payments { get; set; }
+    public virtual ICollection<BillLineItem> LineItems { get; set; }
 }
 
 [Table("Payments")]

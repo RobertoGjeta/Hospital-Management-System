@@ -23,6 +23,7 @@ namespace IVF_Managment_Api.Models.HelperModels;
         public DateTime? EndDate { get; set; }
 
         public string CycleProtocol { get; set; }
+        public string? Outcome { get; set; }
         public bool IsActive { get; set; } = true;
 
         public virtual ICollection<Embryo> Embryos { get; set; }
@@ -46,7 +47,9 @@ namespace IVF_Managment_Api.Models.HelperModels;
         public string StorageCane { get; set; }
         public string VitrificationMethod { get; set; }
         
-        public string DoctorInstructions { get; set; } // Free text for lab instructions [cite: 35]
+        public string DoctorInstructions { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public virtual ICollection<EmbryoObservation> Observations { get; set; }
     }

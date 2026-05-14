@@ -12,6 +12,10 @@ using System.ComponentModel.DataAnnotations.Schema;
         public Guid Id { get; set; }
 
         [Required]
+        public Guid EmbryoId { get; set; }
+        public virtual Embryo Embryo { get; set; }
+
+        [Required]
         public Guid TechnicianId { get; set; }
         public virtual LabTechnician Technician { get; set; }
 

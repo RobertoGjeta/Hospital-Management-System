@@ -1,4 +1,5 @@
 using IVF_Managment_Api.Dtos;
+using IVF_Managment_Api.Exceptions;
 using IVF_Managment_Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +53,45 @@ public class DoctorController : ControllerBase
     {
         var deleted = await _service.DeleteAsync(id);
         if (!deleted) return NotFound();
+        return NoContent();
+    }
+
+    [HttpGet("active")]
+    public async Task<ActionResult<IEnumerable<DoctorResponseDto>>> GetActive()
+    {
+        var result = await _service.GetActiveAsync();
+        return Ok(result);
+    }
+
+    [HttpPut("{id:guid}/deactivate")]
+    public async Task<IActionResult> Deactivate(Guid id)
+    {
+        try
+        {
+            await _service.DeactivateAsync(id);
+            return NoContent();
+        }
+        catch (HasFutureAppointmentsException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("{doctorId:guid}/availability")]
+    public async Task<ActionResult<IEnumerable<DoctorAvailabilityResponseDto>>> GetAvailability(Guid doctorId, [FromQuery] DateOnly from, [FromQuery] DateOnly to)
+    {
+        var result = await _service.GetAvailabilityAsync(doctorId, from, to);
+        return Ok(result);
+    }
+
+    [HttpPut("{doctorId:guid}/availability")]
+    public async Task<IActionResult> SetAvailability(Guid doctorId, List<AvailabilitySlotDto> slots)
+    {
+        await _service.SetAvailabilityAsync(doctorId, slots);
         return NoContent();
     }
 }
